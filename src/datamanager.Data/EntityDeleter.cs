@@ -10,6 +10,10 @@ namespace datamanager.Data
 		{
 		}
 
+		public EntityDeleter (DataIdManager idManager) : base (idManager)
+		{
+		}
+
 		public void Delete(BaseEntity entity)
 		{
 			var client = new RedisClient();

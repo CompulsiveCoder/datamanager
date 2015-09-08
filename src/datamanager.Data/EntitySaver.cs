@@ -9,6 +9,14 @@ namespace datamanager.Data
 {
 	public class EntitySaver : BaseDataAdapter
 	{
+		public EntitySaver()
+		{
+		}
+
+		public EntitySaver (DataIdManager idManager) : base (idManager)
+		{
+		}
+
 		public void Save(BaseEntity entity)
 		{
 			var client = new RedisClient();

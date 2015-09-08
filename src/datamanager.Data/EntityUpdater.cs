@@ -10,13 +10,18 @@ namespace datamanager.Data
 		{
 		}
 
+		public EntityUpdater (DataIdManager idManager) : base (idManager)
+		{
+		}
+
 		public void Update(BaseEntity entity)
 		{
+			var key = new EntityKeys ().GetKey (entity);
 			var client = new RedisClient ();
-			if (client.Exists (entity))
+			if (client.Exists (key))
 				throw new AlreadyExistsException ();
 			else
-				client.Set (new EntityKeys ().GetKey (entity), entity.ToJson ());
+				client.Set (key, entity.ToJson ());
 		}
 	}
 }

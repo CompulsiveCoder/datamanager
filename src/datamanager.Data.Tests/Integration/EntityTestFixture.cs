@@ -8,25 +8,37 @@ namespace datamanager.Data.Tests.Integration
 	public class EntityTestFixture : BaseTestFixture
 	{
 		[Test]
-		public void Test_SaveAndGet()
+		public void Test_SaveReadAndList()
 		{
-			var saver = new EntitySaver ();
 			var entity = new ExampleEntity ("TestEntity", 10);
-			saver.Save (entity);
 
-			var reader = new EntityReader ();
-			var loadedEntity = reader.Read<ExampleEntity>(entity.Id);
+			try
+			{
+				var saver = new EntitySaver ();
+				saver.Save (entity);
 
-			Assert.IsNotNull (loadedEntity);
+				var reader = new EntityReader ();
 
-			var indexer = new EntityLister ();
-			var loadedEntities = indexer.Get<ExampleEntity>();
+				var loadedEntity = reader.Read<ExampleEntity>(entity.Id);
 
-			Assert.IsNotNull (loadedEntities);
-			Assert.AreEqual (1, loadedEntities.Length);
+				Assert.IsNotNull (loadedEntity);
 
-			var deleter = new EntityDeleter ();
-			deleter.Delete (entity);
+				var indexer = new EntityLister ();
+				var loadedEntities = indexer.Get<ExampleEntity>();
+
+				Assert.IsNotNull (loadedEntities);
+				Assert.AreEqual (1, loadedEntities.Length);
+
+			}
+			catch
+			{
+				
+			}
+			finally
+			{
+				var deleter = new EntityDeleter ();
+				deleter.Delete (entity);
+			}
 		}
 	}
 }

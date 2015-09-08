@@ -11,6 +11,10 @@ namespace datamanager.Data
 		{
 		}
 
+		public EntityLister (DataIdManager idManager) : base (idManager)
+		{
+		}
+
 		public T[] Get<T>()
 		{
 			var ids = IdManager.GetIds(typeof(T));

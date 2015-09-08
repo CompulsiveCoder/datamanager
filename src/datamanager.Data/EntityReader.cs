@@ -4,9 +4,13 @@ using datamanager.Entities;
 
 namespace datamanager.Data
 {
-	public class EntityReader
+	public class EntityReader : BaseDataAdapter
 	{
 		public EntityReader ()
+		{
+		}
+
+		public EntityReader (DataIdManager idManager) : base (idManager)
 		{
 		}
 
@@ -14,6 +18,9 @@ namespace datamanager.Data
 		{
 			var client = new RedisClient();
 			var json = client.Get (new EntityKeys ().GetKey (typeof(T), entityId));
+
+			if (String.IsNullOrEmpty (json))
+				return default(T);
 
 			var entity = new Parser().Parse<T> (json);
 
