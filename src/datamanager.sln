@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "datamanager.Entities", "dat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "datamanager.Data.Tests", "datamanager.Data.Tests\datamanager.Data.Tests.csproj", "{C3847E16-2B96-4CEC-8110-11C32CA1D4A1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "datamanager.Entities.Tests", "datamanager.Entities.Tests\datamanager.Entities.Tests.csproj", "{B3F89F02-F6DC-495D-8C87-FB264B4532C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,9 +23,16 @@ Global
 		{ABD79A28-4EDC-4400-9583-4CB96F5E84B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABD79A28-4EDC-4400-9583-4CB96F5E84B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABD79A28-4EDC-4400-9583-4CB96F5E84B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3F89F02-F6DC-495D-8C87-FB264B4532C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3F89F02-F6DC-495D-8C87-FB264B4532C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3F89F02-F6DC-495D-8C87-FB264B4532C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3F89F02-F6DC-495D-8C87-FB264B4532C5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C3847E16-2B96-4CEC-8110-11C32CA1D4A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C3847E16-2B96-4CEC-8110-11C32CA1D4A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3847E16-2B96-4CEC-8110-11C32CA1D4A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3847E16-2B96-4CEC-8110-11C32CA1D4A1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = datamanager.Data\datamanager.Data.csproj
 	EndGlobalSection
 EndGlobal

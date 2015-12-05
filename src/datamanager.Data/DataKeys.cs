@@ -3,9 +3,9 @@ using datamanager.Entities;
 
 namespace datamanager.Data
 {
-	public class EntityKeys
+	public class DataKeys
 	{
-		public EntityKeys ()
+		public DataKeys ()
 		{
 		}
 

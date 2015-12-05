@@ -8,16 +8,16 @@ namespace datamanager.Data
 	{
 		public bool TestMode = false;
 
-		public DataIdManager IdManager;
+		public DataManager Data;
 
 		public BaseDataAdapter ()
 		{
-			IdManager = new DataIdManager ();
+			Data = new DataManager ();
 		}
 
-		public BaseDataAdapter(DataIdManager idManager)
+		public BaseDataAdapter(DataManager data)
 		{
-			IdManager = idManager;
+			Data = data;
 		}
 
 		public string EntityToJson(BaseEntity entity)

@@ -5,24 +5,23 @@ using datamanager.Entities;
 
 namespace datamanager.Data
 {
-	public class EntityLister : BaseDataAdapter
+	public class DataLister : BaseDataAdapter
 	{
-		public EntityLister ()
+		public DataLister ()
 		{
 		}
 
-		public EntityLister (DataIdManager idManager) : base (idManager)
+		public DataLister (DataManager dataManager) : base (dataManager)
 		{
 		}
 
 		public T[] Get<T>()
 		{
-			var ids = IdManager.GetIds(typeof(T));
+			var ids = Data.IdManager.GetIds(typeof(T));
 
 			var entities = new List<T> ();
-			var reader = new EntityReader ();
 			foreach (string id in ids) {
-				entities.Add (reader.Read<T>(id));
+				entities.Add (Data.Reader.Read<T>(id));
 			}
 			return entities.ToArray();
 		}

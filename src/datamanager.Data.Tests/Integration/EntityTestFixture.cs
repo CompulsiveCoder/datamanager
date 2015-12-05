@@ -14,16 +14,16 @@ namespace datamanager.Data.Tests.Integration
 
 			try
 			{
-				var saver = new EntitySaver ();
+				var saver = new DataSaver ();
 				saver.Save (entity);
 
-				var reader = new EntityReader ();
+				var reader = new DataReader ();
 
 				var loadedEntity = reader.Read<ExampleEntity>(entity.Id);
 
 				Assert.IsNotNull (loadedEntity);
 
-				var indexer = new EntityLister ();
+				var indexer = new DataLister ();
 				var loadedEntities = indexer.Get<ExampleEntity>();
 
 				Assert.IsNotNull (loadedEntities);
@@ -36,7 +36,7 @@ namespace datamanager.Data.Tests.Integration
 			}
 			finally
 			{
-				var deleter = new EntityDeleter ();
+				var deleter = new DataDeleter ();
 				deleter.Delete (entity);
 			}
 		}
