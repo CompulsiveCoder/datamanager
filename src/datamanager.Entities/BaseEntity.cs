@@ -37,6 +37,15 @@ namespace datamanager.Entities
 			adder.AddLink (this, propertyName, linkedEntity);
 		}
 
+		public void AddLinks(string propertyName, BaseEntity[] linkedEntities)
+		{
+			var adder = new EntityLinker ();
+
+			foreach (var linkedEntity in linkedEntities) {
+				adder.AddLink (this, propertyName, linkedEntity);
+			}
+		}
+
 		public BaseEntity Clone()
 		{
 			return new EntityCloner ().Clone (this);

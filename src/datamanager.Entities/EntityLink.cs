@@ -1,5 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace datamanager.Entities
 {
@@ -28,9 +30,33 @@ namespace datamanager.Entities
 			Target = entity;
 		}
 
+		public T To<T>()
+			where T : BaseEntity
+		{
+			return (T)Target;
+		}
+
 		public override string ToString ()
 		{
 			return string.Format ("[EntityLink: TypeName={0}, Id={1}]", TypeName, Id);
+		}
+
+		static public EntityLink GetLink(BaseEntity entity)
+		{
+			return entity.GetLink ();
+		}
+
+		static public EntityLink[] GetLinks(BaseEntity[] entities)
+		{
+			return (from entity in entities
+			        select entity.GetLink ()).ToArray ();
+		}
+
+		static public T[] GetEntities<T>(EntityLink[] links)
+			where T : BaseEntity
+		{
+			return (from link in links
+				select (T)link.Target).ToArray ();
 		}
 	}
 }
