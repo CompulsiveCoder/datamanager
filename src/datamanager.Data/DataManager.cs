@@ -69,6 +69,16 @@ namespace datamanager.Data
 			return Lister.Get<T> ();
 		}
 
+		public BaseEntity Get(Type entityType, string entityId)
+		{
+			return Reader.Read (entityType, entityId);
+		}
+
+		public bool Exists(BaseEntity entity)
+		{
+			return Get(entity.GetType(), entity.Id) != null;
+		}
+
 		#region IDisposable implementation
 
 		public void Dispose ()

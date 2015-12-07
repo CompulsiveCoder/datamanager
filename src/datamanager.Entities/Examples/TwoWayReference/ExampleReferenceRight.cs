@@ -10,6 +10,9 @@ namespace datamanager.Entities
 		[TwoWay("Right")]
 		public ExampleReferenceLeft Left { get; set; }
 
+		[TwoWay("OtherRight")]
+		public ExampleReferenceLeft OtherLeft { get; set; }
+
 		public ExampleReferenceRight ()
 		{
 		}

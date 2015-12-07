@@ -21,13 +21,15 @@ namespace datamanager.Data
 		{
 			Console.WriteLine ("Saving: " + entity.GetType ().Name);
 
+			// Commit links before saving, otherwise it will fail
+			Data.Linker.CommitLinks (entity);
+
 			var key = new DataKeys ().GetKey (entity);
 			var json = Data.Preparer.PrepareForStorage(entity).ToJson ();
 			Data.Client.Set(key, json);
 
 			Data.IdManager.Add (entity);
 
-			Data.Linker.CommitLinks (entity);
 		}
 	}
 }

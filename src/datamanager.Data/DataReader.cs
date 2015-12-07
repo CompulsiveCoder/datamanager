@@ -25,6 +25,18 @@ namespace datamanager.Data
 
 			return entity;
 		}
+
+		public BaseEntity Read(Type entityType, string entityId)
+		{
+			var json = Data.Client.Get (new DataKeys ().GetKey (entityType, entityId));
+
+			if (String.IsNullOrEmpty (json))
+				return null;
+
+			var entity = new Parser().Parse(entityType, json);
+
+			return entity;
+		}
 	}
 }
 

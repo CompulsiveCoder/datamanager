@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace datamanager.Entities
 {
@@ -9,6 +10,9 @@ namespace datamanager.Entities
 	{
 		[TwoWay("Left")]
 		public ExampleReferenceRight[] Right { get; set; }
+
+		[TwoWay("OtherLeft")]
+		public List<ExampleReferenceRight> OtherRight { get; set; }
 
 		public ExampleReferenceLeft ()
 		{

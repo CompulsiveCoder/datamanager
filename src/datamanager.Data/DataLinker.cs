@@ -3,6 +3,7 @@ using datamanager.Entities;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace datamanager.Data
 {
@@ -22,6 +23,10 @@ namespace datamanager.Data
 
 		public void CommitLinks(BaseEntity entity)
 		{
+			var previousEntity = Data.Get (entity.GetType(), entity.Id);
+
+			FindAndFixDifferences (previousEntity, entity);
+		
 			// TODO: Finish off
 			//throw new NotImplementedException ();
 			/*if (entity.Log.HasEntries) {
@@ -66,7 +71,7 @@ namespace datamanager.Data
 
 				// TODO: Clean up if statement
 				if ((linker.PropertyHasLinkAttribute(property, out otherPropertyName)
-					|| linker.IsLinkProperty(property))
+					|| linker.IsLinkProperty(entity, property))
 					&& !String.IsNullOrEmpty(otherPropertyName))
 				{
 					if (!String.IsNullOrEmpty (otherPropertyName)) {
@@ -80,6 +85,48 @@ namespace datamanager.Data
 						}
 					}
 				}
+			}
+		}
+
+		public void FindAndFixDifferences(BaseEntity previousEntity, BaseEntity updatedEntity)
+		{
+			var linker = new EntityLinker ();
+
+			var allEntitiesPendingUpdate = new List<BaseEntity> ();
+
+			foreach (var property in updatedEntity.GetType().GetProperties()) {
+				if (linker.IsLinkProperty (updatedEntity, property)) {
+					
+					BaseEntity[] previousLinkedEntities;
+
+					if (previousEntity != null)
+						previousLinkedEntities = linker.GetLinkedEntities (previousEntity, property);
+					else
+						previousLinkedEntities = new BaseEntity[]{ };
+					
+					var updatedLinkedEntities = linker.GetLinkedEntities (updatedEntity, property);
+
+					var newLinkedEntities = (from entity in updatedLinkedEntities
+					                         where !linker.EntityExists (previousLinkedEntities, entity)
+					                         select entity).ToArray ();
+
+					allEntitiesPendingUpdate.AddRange (newLinkedEntities);
+
+					foreach (var newLinkedEntity in newLinkedEntities) {
+						var otherPropertyName = linker.GetOtherPropertyName (property);
+
+						var otherProperty = newLinkedEntity.GetType().GetProperty(otherPropertyName);
+
+						// TODO: Should the property object be passed in, instead of the property name only?
+						linker.AddReturnLink (updatedEntity, property, newLinkedEntity, otherPropertyName);
+					}
+				}
+			}
+
+			Console.WriteLine ("Updated links: " + allEntitiesPendingUpdate.Count);
+
+			foreach (var entity in allEntitiesPendingUpdate) {
+				Data.Update (entity);
 			}
 		}
 	}

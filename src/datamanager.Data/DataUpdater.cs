@@ -18,8 +18,12 @@ namespace datamanager.Data
 		{
 			Console.WriteLine ("Updating: " + entity.GetType ().Name);
 
+			// Commit links before updating
+			Data.Linker.CommitLinks (entity);
+
 			var key = new DataKeys ().GetKey (entity);
 			Data.Client.Set (key, Data.Preparer.PrepareForStorage(entity).ToJson ());
+
 		}
 	}
 }

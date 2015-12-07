@@ -34,6 +34,16 @@ namespace datamanager.Entities.Tests
 			Assert.IsNotNull (right.Left, "Reverse link failed.");
 		}
 
+		[Test]
+		public void Test_IsEntityListProperty()
+		{
+			var left = new ExampleReferenceLeft ();
+
+			var property = left.GetType ().GetProperty ("OtherRight");
+
+			var linker = new EntityLinker ();
+			Assert.IsTrue(linker.IsEntityListProperty(left, property));
+		}
 	}
 }
 

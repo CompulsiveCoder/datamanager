@@ -25,6 +25,18 @@ namespace datamanager.Data
 			}
 			return entities.ToArray();
 		}
+
+		// TODO: Clean up
+		/*public BaseEntity Get(typeof()
+		{
+			var ids = Data.IdManager.GetIds(typeof(T));
+
+			var entities = new List<T> ();
+			foreach (string id in ids) {
+				entities.Add (Data.Reader.Read(id));
+			}
+			return entities.ToArray();
+		}*/
 	}
 }
 

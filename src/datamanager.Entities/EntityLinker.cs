@@ -19,9 +19,9 @@ namespace datamanager.Entities
 			var property = entity.GetType ().GetProperty (propertyName);
 
 			if (PropertyHasLinkAttribute (property, out otherPropertyName)
-				|| IsLinkProperty(property)) {
+				|| IsLinkProperty(entity, property)) {
 				var value = property.GetValue (entity);
-				var newValue = AddEntityToObject (linkedEntity, value, property.PropertyType);
+				var newValue = AddEntityToObject (linkedEntity, value, property);
 				property.SetValue (entity, newValue);
 
 				entity.IsPendingLinkCommit = true;
@@ -80,25 +80,52 @@ namespace datamanager.Entities
 			return false;
 		}
 
-		public bool IsLinkProperty(PropertyInfo property)
+		public string GetOtherPropertyName(PropertyInfo property)
 		{
-			return IsEntityLinkProperty (property)
-			|| IsEntityArrayLinkProperty (property);
+			var otherPropertyName = String.Empty;
+
+			var attributes = property.GetCustomAttributes ();
+
+			foreach (var attribute in attributes) {
+				if (attribute is OneWayAttribute) {
+					otherPropertyName = "";
+				}
+				else if (attribute is TwoWayAttribute) {
+					otherPropertyName = ((TwoWayAttribute)attribute).OtherPropertyName;
+				}
+			}
+
+			return otherPropertyName;
 		}
 
-		public bool IsEntityLinkProperty(PropertyInfo property)
+		public bool IsLinkProperty(BaseEntity entity, PropertyInfo property)
+		{
+			return IsEntityProperty (property)
+				|| IsEntityArrayProperty (property)
+			|| IsEntityListProperty (entity, property);
+		}
+
+		public bool IsEntityProperty(PropertyInfo property)
 		{
 			var isEntity = property.PropertyType.IsSubclassOf (typeof(BaseEntity));
 
 			return isEntity;
 		}
 
-		public bool IsEntityArrayLinkProperty(PropertyInfo property)
+		public bool IsEntityArrayProperty(PropertyInfo property)
 		{
 			var isEntityArray = property.PropertyType.IsArray
 				&& property.PropertyType.GetElementType ().IsSubclassOf (typeof(BaseEntity));
 
 			return isEntityArray;
+		}
+
+		public bool IsEntityListProperty(BaseEntity entity, PropertyInfo property)
+		{
+			var isEntityList = property.PropertyType.IsGenericType
+				|| property.GetValue(entity) is IEnumerable;
+
+			return isEntityList;
 		}
 
 		public bool PropertyLinksToType(BaseEntity entity, PropertyInfo property, Type targetEntityType)
@@ -115,21 +142,26 @@ namespace datamanager.Entities
 
 			var existingReturnLinksObject = targetEntityProperty.GetValue (targetEntity);
 
-			var newReturnLinksObject = AddEntityToObject (entity, existingReturnLinksObject, targetEntityProperty.PropertyType);
+			var newReturnLinksObject = AddEntityToObject (entity, existingReturnLinksObject, targetEntityProperty);
 
 			// TODO: Remove
 			//entity.Log.Add (new EntityLogAddEntry (entity.GetLink()));
 
-			targetEntityProperty.SetValue (targetEntity, newReturnLinksObject);
+			//if (IsEntityListProperty (targetEntity, targetEntityProperty)) {
+			//	throw new NotImplementedException ();
+				//var list = (IList)`
+			//} else {
+				targetEntityProperty.SetValue (targetEntity, newReturnLinksObject);
+			//}
 		}
 
-		public object AddEntityToObject(BaseEntity entityToAdd, object linksObject, Type propertyType)
+		public object AddEntityToObject(BaseEntity entityToAdd, object linksObject, PropertyInfo property)
 		{
-			if (propertyType.IsSubclassOf(typeof(BaseEntity))) {
+			if (IsEntityProperty(property)) {
 				return entityToAdd;
 			}
-			else if (propertyType.IsArray
-				&& propertyType.GetElementType().IsSubclassOf(typeof(BaseEntity))) {
+			else if (IsEntityArrayProperty(property)
+				|| IsEntityListProperty(entityToAdd, property)) {
 
 				var list = new ArrayList ();
 
@@ -140,19 +172,25 @@ namespace datamanager.Entities
 				if (!EntityExists((BaseEntity[])list.ToArray(typeof(BaseEntity)), entityToAdd))
 					list.Add (entityToAdd);
 
-				return list.ToArray(entityToAdd.GetType());
+				// TODO: Clean up
+				//if (IsEntityArrayProperty (property))
+					return list.ToArray (entityToAdd.GetType ());
+				//else if (IsEntityListProperty (entityToAdd, property))
+				//	throw new NotImplementedException ();
 			} else
 				throw new Exception ("Invalid return link object. Must be subclass of BaseEntity or BaseEntity[] array.");
 
+			return null;
 		}
 
 		public object RemoveEntityFromObject(BaseEntity entityToRemove, object linksObject, PropertyInfo property)
 		{
 			// If the property type is a single entity, return the new entity
-			if (IsEntityLinkProperty(property)) {
+			if (IsEntityProperty(property)) {
 				return null;
 			}
-			else if (IsEntityArrayLinkProperty(property)) {
+			else if (IsEntityArrayProperty(property)
+				|| IsEntityListProperty(entityToRemove, property)) {
 				var list = new ArrayList ();
 
 				if (linksObject != null)
@@ -192,10 +230,14 @@ namespace datamanager.Entities
 
 			var value = property.GetValue (entity);
 
-			if (IsEntityLinkProperty (property)) {
-				list.Add ((BaseEntity)value);
-			} else {
-				list.AddRange ((BaseEntity[])value);
+			if (value != null) {
+				if (IsEntityProperty (property)) {
+					list.Add ((BaseEntity)value);
+				} else if (IsEntityArrayProperty(property)) {
+					list.AddRange ((BaseEntity[])value);
+				} else if (IsEntityListProperty(entity, property)) {
+					list.AddRange ((IEnumerable<BaseEntity>)value);
+				}
 			}
 
 			return list.ToArray ();
