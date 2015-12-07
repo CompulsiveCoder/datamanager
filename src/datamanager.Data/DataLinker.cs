@@ -61,7 +61,8 @@ namespace datamanager.Data
 
 			foreach (var property in entity.GetType().GetProperties()) {
 				var otherPropertyName = "";
-				if (linker.PropertyHasLinkAttribute(property, out otherPropertyName))
+				if (linker.PropertyHasLinkAttribute(property, out otherPropertyName)
+					|| linker.IsLinkProperty(property))
 				{
 					var linkedEntities = linker.GetLinkedEntities (entity, property);
 
@@ -69,6 +70,7 @@ namespace datamanager.Data
 					{
 						linker.RemoveReturnLink (entity, property, linkedEntity, otherPropertyName);
 
+						// TODO: Delay update until all references are fixed
 						Data.Update (linkedEntity);
 					}
 				}

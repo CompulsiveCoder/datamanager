@@ -34,11 +34,11 @@ namespace datamanager.Data.Tests
 			var left = new ExampleReferenceLeft ();
 			var right = new ExampleReferenceRight ();
 
-			left.AddLink ("Right", right);
+			left.Right = new ExampleReferenceRight[]{right};
 
 			data.Save(left);
 
-			right.AddLink("Left", left);
+			right.Left = left;
 
 			data.Save (right);
 

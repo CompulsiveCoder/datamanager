@@ -4,7 +4,7 @@ namespace datamanager.Entities
 {
 	public class ExampleReferenceSource : BaseEntity
 	{
-		public EntityLink Target { get; set; }
+		public ExampleReferenceTarget Target { get; set; }
 
 		public ExampleReferenceSource ()
 		{
