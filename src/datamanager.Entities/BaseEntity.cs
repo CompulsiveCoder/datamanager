@@ -8,16 +8,18 @@ namespace datamanager.Entities
 	{
 		public string Id;
 
-		[JsonIgnore]
-		[NonSerialized]
-		public EntityLog Log;
+		// TODO: Remove
+		//[JsonIgnore]
+		//[NonSerialized]
+		//public EntityLog Log;
 
 		public bool IsPendingLinkCommit = false;
 
 		public BaseEntity ()
 		{
 			Id = Guid.NewGuid ().ToString();
-			Log = new EntityLog ();
+			// TODO: Remove
+		//	Log = new EntityLog ();
 		}
 
 		public string ToJson()
@@ -25,10 +27,11 @@ namespace datamanager.Entities
 			return JsonConvert.SerializeObject (this);
 		}
 
-		public EntityLink GetLink()
+		// TODO: Remove
+		/*public EntityLink GetLink()
 		{
 			return new EntityLink(this);
-		}
+		}*/
 
 		public void AddLink(string propertyName, BaseEntity linkedEntity)
 		{

@@ -40,14 +40,10 @@
     <Compile Include="Examples\TwoWayReference\ExampleReferenceLeft.cs" />
     <Compile Include="Examples\TwoWayReference\ExampleReferenceRight.cs" />
     <Compile Include="TwoWayAttribute.cs" />
-    <Compile Include="BaseLinkLogEntry.cs" />
     <Compile Include="OneWayAttribute.cs" />
     <Compile Include="BaseLinkAttribute.cs" />
-    <Compile Include="EntityLink.cs" />
     <Compile Include="EntityLinker.cs" />
     <Compile Include="EntityCloner.cs" />
-    <Compile Include="EntityLogAddEntry.cs" />
-    <Compile Include="EntityLog.cs" />
     <Compile Include="Examples\OneWayReference\ExampleReferenceSource.cs" />
     <Compile Include="Examples\OneWayReference\ExampleReferenceTarget.cs" />
   </ItemGroup>

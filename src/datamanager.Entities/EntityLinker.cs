@@ -26,23 +26,38 @@ namespace datamanager.Entities
 
 				entity.IsPendingLinkCommit = true;
 
-				entity.Log.Add (new EntityLogAddEntry (entity.GetLink()));
+				// TODO: Remove
+				//entity.Log.Add (new EntityLogAddEntry (entity.GetLink()));
 
 				if (!String.IsNullOrEmpty(otherPropertyName))
 					AddReturnLink (entity, property, linkedEntity, otherPropertyName);
 			} else
-				throw new Exception ("Invalid property. It needs to have the type EntityLink.");
+				throw new Exception ("Invalid property. It needs to have the type BaseEntity.");
 		}
 
 		public void RemoveReturnLink(BaseEntity entity, PropertyInfo property, BaseEntity targetEntity, string targetEntityPropertyName)
 		{
+			
+			if (entity == null)
+				throw new ArgumentNullException ("entity");
+			
+			if (property == null)
+				throw new ArgumentNullException ("property");
+			
+			if (targetEntity == null)
+				throw new ArgumentNullException ("targetEntity", "Entity '" + entity.GetType().FullName + "', property '" + property.Name + "'.");
+
 			var targetEntityProperty = targetEntity.GetType ().GetProperty (targetEntityPropertyName);
 
-			var existingReturnLinksObject = targetEntityProperty.GetValue (targetEntity);
+			if (targetEntityProperty == null)
+				throw new Exception ("Property '" + targetEntityPropertyName + "' not found on type '" + targetEntity.GetType().FullName + "'.");
+			else {
+				var existingReturnLinksObject = targetEntityProperty.GetValue (targetEntity);
 
-			var newReturnLinksObject = RemoveEntityFromObject (entity, existingReturnLinksObject, targetEntityProperty);
+				var newReturnLinksObject = RemoveEntityFromObject (entity, existingReturnLinksObject, targetEntityProperty);
 
-			targetEntityProperty.SetValue (targetEntity, newReturnLinksObject);
+				targetEntityProperty.SetValue (targetEntity, newReturnLinksObject);
+			}
 		}
 
 		public bool PropertyHasLinkAttribute(PropertyInfo property, out string otherPropertyName)
@@ -88,9 +103,10 @@ namespace datamanager.Entities
 
 		public bool PropertyLinksToType(BaseEntity entity, PropertyInfo property, Type targetEntityType)
 		{
-			var summary = (EntityLink)property.GetValue (entity);
+			throw new NotImplementedException ();
+			/*var summary = property.GetValue (entity);
 
-			return targetEntityType.FullName == summary.TypeName;
+			return targetEntityType.FullName == summary.GetType().FullName;*/
 		}
 
 		public void AddReturnLink(BaseEntity entity, PropertyInfo property, BaseEntity targetEntity, string targetEntityPropertyName)
@@ -101,7 +117,8 @@ namespace datamanager.Entities
 
 			var newReturnLinksObject = AddEntityToObject (entity, existingReturnLinksObject, targetEntityProperty.PropertyType);
 
-			entity.Log.Add (new EntityLogAddEntry (entity.GetLink()));
+			// TODO: Remove
+			//entity.Log.Add (new EntityLogAddEntry (entity.GetLink()));
 
 			targetEntityProperty.SetValue (targetEntity, newReturnLinksObject);
 		}
@@ -125,7 +142,7 @@ namespace datamanager.Entities
 
 				return list.ToArray(entityToAdd.GetType());
 			} else
-				throw new Exception ("Invalid return link object. Must be EntityLink or EntityLink[].");
+				throw new Exception ("Invalid return link object. Must be subclass of BaseEntity or BaseEntity[] array.");
 
 		}
 
@@ -154,9 +171,10 @@ namespace datamanager.Entities
 
 		}
 
-		public EntityLink[] GetLinks (BaseEntity entity, PropertyInfo property)
-		{
-			throw new NotImplementedException ();
+		// TODO: Remove
+		//public EntityLink[] GetLinks (BaseEntity entity, PropertyInfo property)
+		//{
+		//	throw new NotImplementedException ();
 			/*var value = property.GetValue (entity);
 
 			if (IsEntityLinkProperty(property)) {
@@ -166,7 +184,7 @@ namespace datamanager.Entities
 			}
 
 			return new EntityLink[]{ };*/
-		}
+		//}
 
 		public BaseEntity[] GetLinkedEntities (BaseEntity entity, PropertyInfo property)
 		{

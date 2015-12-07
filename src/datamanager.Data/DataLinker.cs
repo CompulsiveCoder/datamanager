@@ -22,7 +22,9 @@ namespace datamanager.Data
 
 		public void CommitLinks(BaseEntity entity)
 		{
-			if (entity.Log.HasEntries) {
+			// TODO: Finish off
+			//throw new NotImplementedException ();
+			/*if (entity.Log.HasEntries) {
 				foreach (var logEntry in entity.Log.Entries) {
 					if (logEntry is EntityLogAddEntry) {
 						var target = (BaseEntity)logEntry.Link.Target;
@@ -33,7 +35,7 @@ namespace datamanager.Data
 						}
 					}
 				}
-			}
+			}*/
 
 		}
 
@@ -61,17 +63,21 @@ namespace datamanager.Data
 
 			foreach (var property in entity.GetType().GetProperties()) {
 				var otherPropertyName = "";
-				if (linker.PropertyHasLinkAttribute(property, out otherPropertyName)
+
+				// TODO: Clean up if statement
+				if ((linker.PropertyHasLinkAttribute(property, out otherPropertyName)
 					|| linker.IsLinkProperty(property))
+					&& !String.IsNullOrEmpty(otherPropertyName))
 				{
-					var linkedEntities = linker.GetLinkedEntities (entity, property);
+					if (!String.IsNullOrEmpty (otherPropertyName)) {
+						var linkedEntities = linker.GetLinkedEntities (entity, property);
 
-					foreach (var linkedEntity in linkedEntities)
-					{
-						linker.RemoveReturnLink (entity, property, linkedEntity, otherPropertyName);
+						foreach (var linkedEntity in linkedEntities) {
+							linker.RemoveReturnLink (entity, property, linkedEntity, otherPropertyName);
 
-						// TODO: Delay update until all references are fixed
-						Data.Update (linkedEntity);
+							// TODO: Delay update until all references are fixed
+							Data.Update (linkedEntity);
+						}
 					}
 				}
 			}

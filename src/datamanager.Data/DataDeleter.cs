@@ -16,6 +16,9 @@ namespace datamanager.Data
 
 		public void Delete(BaseEntity entity)
 		{
+			if (entity == null)
+				throw new ArgumentNullException ("entity");
+			
 			Console.WriteLine ("Deleting: " + entity.GetType ().Name);
 
 			Data.Linker.RemoveLinks (entity);
