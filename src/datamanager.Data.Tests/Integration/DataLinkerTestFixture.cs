@@ -49,25 +49,6 @@ namespace datamanager.Data.Tests
 			// The "left.Right" property should now be empty
 			Assert.IsEmpty (newLeft.Right, "Linker failed to remove the link.");
 		}
-
-		[Test]
-		public void Test_TwoWayReference_Add_EntityListProperty()
-		{
-			var data = new DataManager();
-
-			var left = new ExampleReferenceLeft ();
-
-			data.Save(left);
-
-			var right = new ExampleReferenceRight ();
-
-			right.OtherLeft = left;
-
-			data.Save (right);
-
-			// The "left.Right" property should now contain a link to the "right" object
-			Assert.IsNotNull (left.OtherRight, "Linker failed to add the link to the other entity.");
-		}
 	}
 }
 

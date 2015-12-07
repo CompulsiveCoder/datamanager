@@ -101,8 +101,7 @@ namespace datamanager.Entities
 		public bool IsLinkProperty(BaseEntity entity, PropertyInfo property)
 		{
 			return IsEntityProperty (property)
-				|| IsEntityArrayProperty (property)
-			|| IsEntityListProperty (entity, property);
+				|| IsEntityArrayProperty (property);
 		}
 
 		public bool IsEntityProperty(PropertyInfo property)
@@ -120,14 +119,6 @@ namespace datamanager.Entities
 			return isEntityArray;
 		}
 
-		public bool IsEntityListProperty(BaseEntity entity, PropertyInfo property)
-		{
-			var isEntityList = property.PropertyType.IsGenericType
-				|| property.GetValue(entity) is IEnumerable;
-
-			return isEntityList;
-		}
-
 		public bool PropertyLinksToType(BaseEntity entity, PropertyInfo property, Type targetEntityType)
 		{
 			throw new NotImplementedException ();
@@ -138,7 +129,9 @@ namespace datamanager.Entities
 
 		public void AddReturnLink(BaseEntity entity, PropertyInfo property, BaseEntity targetEntity, string targetEntityPropertyName)
 		{
-			var targetEntityProperty = targetEntity.GetType ().GetProperty (targetEntityPropertyName);
+			var targetEntityType = targetEntity.GetType ();
+
+			var targetEntityProperty = targetEntityType.GetProperty (targetEntityPropertyName);
 
 			var existingReturnLinksObject = targetEntityProperty.GetValue (targetEntity);
 
@@ -153,6 +146,8 @@ namespace datamanager.Entities
 			//} else {
 				targetEntityProperty.SetValue (targetEntity, newReturnLinksObject);
 			//}
+
+			entity.IsPendingLinkCommit = true;
 		}
 
 		public object AddEntityToObject(BaseEntity entityToAdd, object linksObject, PropertyInfo property)
@@ -160,8 +155,7 @@ namespace datamanager.Entities
 			if (IsEntityProperty(property)) {
 				return entityToAdd;
 			}
-			else if (IsEntityArrayProperty(property)
-				|| IsEntityListProperty(entityToAdd, property)) {
+			else if (IsEntityArrayProperty(property)) {
 
 				var list = new ArrayList ();
 
@@ -189,8 +183,7 @@ namespace datamanager.Entities
 			if (IsEntityProperty(property)) {
 				return null;
 			}
-			else if (IsEntityArrayProperty(property)
-				|| IsEntityListProperty(entityToRemove, property)) {
+			else if (IsEntityArrayProperty(property)) {
 				var list = new ArrayList ();
 
 				if (linksObject != null)
@@ -233,10 +226,8 @@ namespace datamanager.Entities
 			if (value != null) {
 				if (IsEntityProperty (property)) {
 					list.Add ((BaseEntity)value);
-				} else if (IsEntityArrayProperty(property)) {
+				} else if (IsEntityArrayProperty (property)) {
 					list.AddRange ((BaseEntity[])value);
-				} else if (IsEntityListProperty(entity, property)) {
-					list.AddRange ((IEnumerable<BaseEntity>)value);
 				}
 			}
 

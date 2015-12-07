@@ -2,6 +2,7 @@
 using datamanager.Data;
 using datamanager.Entities;
 using Sider;
+using System.Collections.Generic;
 
 namespace datamanager.Data
 {
@@ -18,6 +19,9 @@ namespace datamanager.Data
 		public DataLinker Linker;
 
 		public RedisClient Client;
+
+		public List<BaseEntity> PendingUpdate = new List<BaseEntity>();
+		public List<BaseEntity> PendingDelete = new List<BaseEntity>();
 
 		public DataManager ()
 		{
@@ -52,11 +56,32 @@ namespace datamanager.Data
 		public void Update(BaseEntity entity)
 		{
 			Updater.Update (entity);
+
+			foreach (var e in PendingUpdate) {
+				Updater.Update (e);
+			}
+			PendingUpdate.Clear ();
+		}
+
+		public void DelayUpdate(BaseEntity entity)
+		{
+			if (!PendingUpdate.Contains(entity))
+				PendingUpdate.Add (entity);
 		}
 
 		public void Delete(BaseEntity entity)
 		{
 			Deleter.Delete (entity);
+
+			foreach (var e in PendingDelete)
+				Deleter.Delete (e);
+			PendingDelete.Clear ();
+		}
+
+		public void DelayDelete(BaseEntity entity)
+		{
+			if (!PendingDelete.Contains(entity))
+				PendingDelete.Add (entity);
 		}
 
 		public T Get<T>(string id)

@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace datamanager.Entities
 {
@@ -14,6 +15,8 @@ namespace datamanager.Entities
 		//public EntityLog Log;
 
 		public bool IsPendingLinkCommit = false;
+
+		//public string[] ChangedProperties = new String[]{};
 
 		public BaseEntity ()
 		{
@@ -53,6 +56,12 @@ namespace datamanager.Entities
 		{
 			return new EntityCloner ().Clone (this);
 		}
+
+		/*public void AddChangedProperty(string propertyName)
+		{
+			var list = new List<string> ();
+			list.
+		}*/
 	}
 }
 
