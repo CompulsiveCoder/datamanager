@@ -19,7 +19,7 @@ namespace datamanager.Data
 
 		public void Save(BaseEntity entity)
 		{
-			Console.WriteLine ("Saving: " + entity.GetType ().Name);
+			//Console.WriteLine ("Saving: " + entity.GetType ().Name);
 
 			// Commit links before saving, otherwise it will fail
 			Data.Linker.CommitLinks (entity);

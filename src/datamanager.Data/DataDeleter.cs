@@ -19,7 +19,7 @@ namespace datamanager.Data
 			if (entity == null)
 				throw new ArgumentNullException ("entity");
 			
-			Console.WriteLine ("Deleting: " + entity.GetType ().Name);
+			//Console.WriteLine ("Deleting: " + entity.GetType ().Name);
 
 			Data.Linker.RemoveLinks (entity);
 

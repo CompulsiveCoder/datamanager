@@ -16,7 +16,7 @@ namespace datamanager.Data
 
 		public void Update(BaseEntity entity)
 		{
-			Console.WriteLine ("Updating: " + entity.GetType ().Name);
+			//Console.WriteLine ("Updating: " + entity.GetType ().Name);
 
 			// Commit links before updating
 			Data.Linker.CommitLinks (entity);

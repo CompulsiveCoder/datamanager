@@ -57,10 +57,11 @@ namespace datamanager.Data
 		{
 			Updater.Update (entity);
 
-			foreach (var e in PendingUpdate) {
-				Updater.Update (e);
+			while (PendingUpdate.Count > 0)
+			{
+				Updater.Update (PendingUpdate[0]);
+				PendingUpdate.RemoveAt (0);
 			}
-			PendingUpdate.Clear ();
 		}
 
 		public void DelayUpdate(BaseEntity entity)
@@ -73,9 +74,11 @@ namespace datamanager.Data
 		{
 			Deleter.Delete (entity);
 
-			foreach (var e in PendingDelete)
-				Deleter.Delete (e);
-			PendingDelete.Clear ();
+			while (PendingDelete.Count > 0)
+			{
+				Deleter.Delete (PendingDelete[0]);
+				PendingDelete.RemoveAt (0);
+			}
 		}
 
 		public void DelayDelete(BaseEntity entity)

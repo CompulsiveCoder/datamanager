@@ -236,9 +236,16 @@ namespace datamanager.Entities
 
 		public bool EntityExists(BaseEntity[] entities, BaseEntity entityToFind)
 		{
+			if (entities == null)
+				return false;
+			
+			if (entityToFind == null)
+				throw new ArgumentNullException ("entityToFind");
+			
 			return (from entity in entities
-				where entity.GetType().FullName == entityToFind.GetType().FullName
-			            && entity.Id == entityToFind.Id
+				where entity != null
+					&& entity.GetType() == entityToFind.GetType()
+			        && entity.Id == entityToFind.Id
 				select entity).Count() > 0;
 		}
 	}

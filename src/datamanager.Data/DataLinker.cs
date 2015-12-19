@@ -62,7 +62,7 @@ namespace datamanager.Data
 
 		public void RemoveLinks (BaseEntity entity)
 		{
-			Console.WriteLine ("Removing links");
+			//Console.WriteLine ("Removing links");
 
 			var linker = new EntityLinker ();
 
@@ -115,15 +115,13 @@ namespace datamanager.Data
 					foreach (var newLinkedEntity in newLinkedEntities) {
 						var otherPropertyName = linker.GetOtherPropertyName (property);
 
-						//var otherProperty = newLinkedEntity.GetType().GetProperty(otherPropertyName);
-
 						// TODO: Should the property object be passed in, instead of the property name only?
 						linker.AddReturnLink (updatedEntity, property, newLinkedEntity, otherPropertyName);
 					}
 				}
 			}
 
-			Console.WriteLine ("Updated links: " + allEntitiesPendingUpdate.Count);
+			//Console.WriteLine ("Updated links: " + allEntitiesPendingUpdate.Count);
 
 			foreach (var entity in allEntitiesPendingUpdate) {
 				Data.DelayUpdate (entity);
