@@ -16,10 +16,14 @@ namespace datamanager.Data
 
 		public void Update(BaseEntity entity)
 		{
-			Console.WriteLine ("Updating: " + entity.GetType ().Name);
+			//if (Data.Exists (entity)) {
+				if (Data.IsVerbose)
+					Console.WriteLine ("Updating: " + entity.GetType ().Name);
 
-			var key = new DataKeys ().GetKey (entity);
-			Data.Client.Set (key, Data.Preparer.PrepareForStorage(entity).ToJson ());
+				var key = Keys.GetKey (entity);
+				Data.Client.Set (key, Data.Preparer.PrepareForStorage (entity).ToJson ());
+			//} else
+			//	throw new Exception ("Cannot update '" + entity.GetType().Name + "' entity. Not found in data store.");
 		}
 	}
 }

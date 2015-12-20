@@ -10,14 +10,18 @@ namespace datamanager.Data
 
 		public DataManager Data;
 
+		public DataKeys Keys;
+
 		public BaseDataAdapter ()
 		{
 			Data = new DataManager ();
+			Keys = new DataKeys (Data.Prefix);
 		}
 
 		public BaseDataAdapter(DataManager data)
 		{
 			Data = data;
+			Keys = new DataKeys (Data.Prefix);
 		}
 
 		public string EntityToJson(BaseEntity entity)

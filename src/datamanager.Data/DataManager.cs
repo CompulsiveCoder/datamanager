@@ -19,6 +19,10 @@ namespace datamanager.Data
 
 		public RedisClient Client;
 
+		public string Prefix { get;set; }
+
+		public bool IsVerbose = false;
+
 		public DataManager ()
 		{
 			Construct ();

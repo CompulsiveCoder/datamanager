@@ -113,6 +113,8 @@ namespace datamanager.Entities
 		{
 			var targetEntityProperty = targetEntity.GetType ().GetProperty (targetEntityPropertyName);
 
+			if (targetEntityProperty == null)
+				throw new ArgumentException ("The property '" + targetEntityPropertyName + "' was not found on the '" + targetEntity.GetType ().Name + "' entity.");
 			var existingReturnLinksObject = targetEntityProperty.GetValue (targetEntity);
 
 			var newReturnLinksObject = AddEntityToObject (entity, existingReturnLinksObject, targetEntityProperty.PropertyType);
@@ -171,31 +173,19 @@ namespace datamanager.Entities
 
 		}
 
-		// TODO: Remove
-		//public EntityLink[] GetLinks (BaseEntity entity, PropertyInfo property)
-		//{
-		//	throw new NotImplementedException ();
-			/*var value = property.GetValue (entity);
-
-			if (IsEntityLinkProperty(property)) {
-				return new BaseEntity[]{value};
-			} else if (IsEntityArrayLinkProperty(property)) {
-				return (EntityLink[])value;
-			}
-
-			return new EntityLink[]{ };*/
-		//}
-
 		public BaseEntity[] GetLinkedEntities (BaseEntity entity, PropertyInfo property)
 		{
 			var list = new List<BaseEntity> ();
 
 			var value = property.GetValue (entity);
 
-			if (IsEntityLinkProperty (property)) {
-				list.Add ((BaseEntity)value);
-			} else {
-				list.AddRange ((BaseEntity[])value);
+			if (value != null) {
+				if (IsEntityLinkProperty (property)) {
+					list.Add ((BaseEntity)value);
+				} else {
+					if (((BaseEntity[])value).Length > 0)
+						list.AddRange ((BaseEntity[])value);
+				}
 			}
 
 			return list.ToArray ();

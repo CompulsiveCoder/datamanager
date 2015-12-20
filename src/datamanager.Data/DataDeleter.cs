@@ -23,7 +23,7 @@ namespace datamanager.Data
 
 			Data.Linker.RemoveLinks (entity);
 
-			Data.Client.Del(new DataKeys().GetKey(entity));
+			Data.Client.Del(Keys.GetKey(entity));
 
 			Data.IdManager.Remove (entity);
 		}

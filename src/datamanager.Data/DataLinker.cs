@@ -73,10 +73,12 @@ namespace datamanager.Data
 						var linkedEntities = linker.GetLinkedEntities (entity, property);
 
 						foreach (var linkedEntity in linkedEntities) {
-							linker.RemoveReturnLink (entity, property, linkedEntity, otherPropertyName);
+							if (linkedEntity != null) {
+								linker.RemoveReturnLink (entity, property, linkedEntity, otherPropertyName);
 
-							// TODO: Delay update until all references are fixed
-							Data.Update (linkedEntity);
+								// TODO: Delay update until all references are fixed
+								Data.Update (linkedEntity);
+							}
 						}
 					}
 				}

@@ -12,7 +12,7 @@ namespace datamanager.Data.Tests
 		[SetUp]
 		public void Initialize()
 		{
-			DataConfig.Prefix += "-Test";
+			Console.WriteLine ("Setting up test fixture " + this.GetType ().FullName);
 		}
 	}
 }
