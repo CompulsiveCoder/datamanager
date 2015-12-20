@@ -26,9 +26,6 @@ namespace datamanager.Entities
 
 				entity.IsPendingLinkCommit = true;
 
-				// TODO: Remove
-				//entity.Log.Add (new EntityLogAddEntry (entity.GetLink()));
-
 				if (!String.IsNullOrEmpty(otherPropertyName))
 					AddReturnLink (entity, property, linkedEntity, otherPropertyName);
 			} else
@@ -133,6 +130,8 @@ namespace datamanager.Entities
 
 			var targetEntityProperty = targetEntityType.GetProperty (targetEntityPropertyName);
 
+			if (targetEntityProperty == null)
+				throw new ArgumentException ("The property '" + targetEntityPropertyName + "' was not found on the '" + targetEntity.GetType ().Name + "' entity.");
 			var existingReturnLinksObject = targetEntityProperty.GetValue (targetEntity);
 
 			var newReturnLinksObject = AddEntityToObject (entity, existingReturnLinksObject, targetEntityProperty);
@@ -202,32 +201,26 @@ namespace datamanager.Entities
 
 		}
 
-		// TODO: Remove
-		//public EntityLink[] GetLinks (BaseEntity entity, PropertyInfo property)
-		//{
-		//	throw new NotImplementedException ();
-			/*var value = property.GetValue (entity);
-
-			if (IsEntityLinkProperty(property)) {
-				return new BaseEntity[]{value};
-			} else if (IsEntityArrayLinkProperty(property)) {
-				return (EntityLink[])value;
-			}
-
-			return new EntityLink[]{ };*/
-		//}
-
 		public BaseEntity[] GetLinkedEntities (BaseEntity entity, PropertyInfo property)
 		{
 			var list = new List<BaseEntity> ();
 
 			var value = property.GetValue (entity);
 
+			// TODO: Clean up
 			if (value != null) {
+//<<<<<<< HEAD
+//				if (IsEntityProperty (property)) {
+//					list.Add ((BaseEntity)value);
+//				} else if (IsEntityArrayProperty (property)) {
+//					list.AddRange ((BaseEntity[])value);
+//=======
 				if (IsEntityProperty (property)) {
 					list.Add ((BaseEntity)value);
-				} else if (IsEntityArrayProperty (property)) {
-					list.AddRange ((BaseEntity[])value);
+				} else {
+					if (((BaseEntity[])value).Length > 0)
+						list.AddRange ((BaseEntity[])value);
+//>>>>>>> master
 				}
 			}
 

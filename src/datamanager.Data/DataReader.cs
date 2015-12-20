@@ -16,7 +16,7 @@ namespace datamanager.Data
 
 		public T Read<T>(string entityId)
 		{
-			var json = Data.Client.Get (new DataKeys ().GetKey (typeof(T), entityId));
+			var json = Data.Client.Get (Keys.GetKey (typeof(T), entityId));
 
 			if (String.IsNullOrEmpty (json))
 				return default(T);
@@ -28,7 +28,7 @@ namespace datamanager.Data
 
 		public BaseEntity Read(Type entityType, string entityId)
 		{
-			var json = Data.Client.Get (new DataKeys ().GetKey (entityType, entityId));
+			var json = Data.Client.Get (Keys.GetKey (entityType, entityId));
 
 			if (String.IsNullOrEmpty (json))
 				return null;

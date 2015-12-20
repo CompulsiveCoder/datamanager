@@ -5,8 +5,11 @@ namespace datamanager.Data
 {
 	public class DataKeys
 	{
-		public DataKeys ()
+		public string Prefix;
+
+		public DataKeys (string prefix)
 		{
+			Prefix = prefix;
 		}
 
 		public string GetKey(BaseEntity entity)
@@ -16,12 +19,12 @@ namespace datamanager.Data
 
 		public string GetKey(Type entityType, string id)
 		{
-			return DataConfig.Prefix + "-" + entityType.Name + "-" + id;
+			return Prefix + "-" + entityType.Name + "-" + id;
 		}
 
 		public string GetIdsKey(Type entityType)
 		{
-			return DataConfig.Prefix + "-" + entityType.Name + "-Ids";
+			return Prefix + "-" + entityType.Name + "-Ids";
 		}
 	}
 }

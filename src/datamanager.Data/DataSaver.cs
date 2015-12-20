@@ -19,17 +19,21 @@ namespace datamanager.Data
 
 		public void Save(BaseEntity entity)
 		{
-			//Console.WriteLine ("Saving: " + entity.GetType ().Name);
+			if (!Data.Exists (entity)) {
+				if (Data.IsVerbose)
+					Console.WriteLine ("Saving: " + entity.GetType ().Name);
 
-			// Commit links before saving, otherwise it will fail
-			Data.Linker.CommitLinks (entity);
+				// Commit links before saving, otherwise it will fail
+				Data.Linker.CommitLinks (entity);
 
-			var key = new DataKeys ().GetKey (entity);
-			var json = Data.Preparer.PrepareForStorage(entity).ToJson ();
-			Data.Client.Set(key, json);
+				var key = Keys.GetKey (entity);
+				var json = Data.Preparer.PrepareForStorage (entity).ToJson ();
+				Data.Client.Set (key, json);
 
-			Data.IdManager.Add (entity);
+				Data.IdManager.Add (entity);
 
+			} else
+				Data.Update (entity);
 		}
 	}
 }

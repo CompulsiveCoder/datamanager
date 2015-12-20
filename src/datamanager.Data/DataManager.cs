@@ -23,6 +23,10 @@ namespace datamanager.Data
 		public List<BaseEntity> PendingUpdate = new List<BaseEntity>();
 		public List<BaseEntity> PendingDelete = new List<BaseEntity>();
 
+		public string Prefix { get;set; }
+
+		public bool IsVerbose = false;
+
 		public DataManager ()
 		{
 			Construct ();

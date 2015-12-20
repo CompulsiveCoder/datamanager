@@ -9,9 +9,12 @@ namespace datamanager.Data
 	{
 		public DataManager Data;
 
+		public DataKeys Keys;
+
 		public DataIdManager (DataManager dataManager)
 		{
 			Data = dataManager;
+			Keys = new DataKeys (Data.Prefix);
 		}
 
 		public void Add(BaseEntity entity)
@@ -37,7 +40,7 @@ namespace datamanager.Data
 
 		public string[] GetIds(Type entityType)
 		{
-			var idsKey = new DataKeys ().GetIdsKey (entityType);
+			var idsKey = Keys.GetIdsKey (entityType);
 
 			var idsString = Data.Client.Get (idsKey);
 
@@ -51,7 +54,7 @@ namespace datamanager.Data
 
 		public void SetIds(Type entityType, string[] ids)
 		{
-			var idsKey = new DataKeys ().GetIdsKey (entityType);
+			var idsKey = Keys.GetIdsKey (entityType);
 			var idsString = String.Join (",", ids);
 			Data.Client.Set(idsKey, idsString);
 		}
