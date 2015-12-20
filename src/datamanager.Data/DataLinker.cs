@@ -114,9 +114,9 @@ namespace datamanager.Data
 
 					allEntitiesPendingUpdate.AddRange (newLinkedEntities);
 
-					foreach (var newLinkedEntity in newLinkedEntities) {
-						var otherPropertyName = linker.GetOtherPropertyName (property);
+					var otherPropertyName = linker.GetOtherPropertyName (property);
 
+					foreach (var newLinkedEntity in newLinkedEntities) {
 						// TODO: Should the property object be passed in, instead of the property name only?
 						linker.AddReturnLink (updatedEntity, property, newLinkedEntity, otherPropertyName);
 					}
