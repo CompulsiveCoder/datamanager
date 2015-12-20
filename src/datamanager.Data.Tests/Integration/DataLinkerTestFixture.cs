@@ -27,6 +27,32 @@ namespace datamanager.Data.Tests
 		}
 
 		[Test]
+		public void Test_TwoWayReference_RemoveReverseLinkOnUpdate()
+		{
+			var data = new DataManager();
+
+			var left = new ExampleReferenceLeft ();
+			var right = new ExampleReferenceRight ();
+
+			left.Right = new ExampleReferenceRight[]{right};
+
+			data.Save(left);
+
+			right.Left = left;
+
+			data.Save (right);
+
+			right.Left = null;
+
+			data.Update(right);
+
+			var newLeft = data.Get<ExampleReferenceLeft> (left.Id);
+
+			// The "left.Right" property should now be empty
+			Assert.IsEmpty (newLeft.Right, "Linker failed to remove the link.");
+		}
+
+		[Test]
 		public void Test_TwoWayReference_RemoveOnDelete()
 		{
 			var data = new DataManager();

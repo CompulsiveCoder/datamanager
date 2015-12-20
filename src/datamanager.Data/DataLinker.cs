@@ -11,14 +11,18 @@ namespace datamanager.Data
 	{
 		public DataManager Data { get; set; }
 
+		public EntityLinker Linker { get; set; }
+
 		public DataLinker ()
 		{
 			Data = new DataManager ();
+			Linker = new EntityLinker ();
 		}
 
 		public DataLinker (DataManager dataManager)
 		{
 			Data = dataManager;
+			Linker = new EntityLinker ();
 		}
 
 		public void CommitLinks(BaseEntity entity)
@@ -92,41 +96,74 @@ namespace datamanager.Data
 
 		public void FindAndFixDifferences(BaseEntity previousEntity, BaseEntity updatedEntity)
 		{
-			var linker = new EntityLinker ();
-
-			var allEntitiesPendingUpdate = new List<BaseEntity> ();
+			// TODO: Clean up
+			//var allEntitiesPendingUpdate = new List<BaseEntity> ();
 
 			foreach (var property in updatedEntity.GetType().GetProperties()) {
-				if (linker.IsLinkProperty (updatedEntity, property)) {
-					
-					BaseEntity[] previousLinkedEntities;
-
-					if (previousEntity != null)
-						previousLinkedEntities = linker.GetLinkedEntities (previousEntity, property);
-					else
-						previousLinkedEntities = new BaseEntity[]{ };
-					
-					var updatedLinkedEntities = linker.GetLinkedEntities (updatedEntity, property);
-
-					var newLinkedEntities = (from entity in updatedLinkedEntities
-					                         where !linker.EntityExists (previousLinkedEntities, entity)
-					                         select entity).ToArray ();
-
-					allEntitiesPendingUpdate.AddRange (newLinkedEntities);
-
-					var otherPropertyName = linker.GetOtherPropertyName (property);
-
-					foreach (var newLinkedEntity in newLinkedEntities) {
-						// TODO: Should the property object be passed in, instead of the property name only?
-						linker.AddReturnLink (updatedEntity, property, newLinkedEntity, otherPropertyName);
-					}
+				if (Linker.IsLinkProperty (updatedEntity, property)) {
+					FindAndFixDifferences (previousEntity, updatedEntity, property);
 				}
 			}
 
 			//Console.WriteLine ("Updated links: " + allEntitiesPendingUpdate.Count);
 
-			foreach (var entity in allEntitiesPendingUpdate) {
-				Data.DelayUpdate (entity);
+			//foreach (var entity in allEntitiesPendingUpdate) {
+			//	Data.DelayUpdate (entity);
+			//}
+		}
+
+		public void FindAndFixDifferences(BaseEntity previousEntity, BaseEntity updatedEntity, PropertyInfo property)
+		{
+			// TODO: Clean up
+			//var allEntitiesPendingUpdate = new List<BaseEntity> ();
+
+			BaseEntity[] previousLinkedEntities;
+
+			if (previousEntity != null)
+				previousLinkedEntities = Linker.GetLinkedEntities (previousEntity, property);
+			else
+				previousLinkedEntities = new BaseEntity[]{ };
+
+			var updatedLinkedEntities = Linker.GetLinkedEntities (updatedEntity, property);
+
+			var newLinkedEntities = (from entity in updatedLinkedEntities
+				where !Linker.EntityExists (previousLinkedEntities, entity)
+				select entity).ToArray ();
+
+			var oldLinkedEntities = (from entity in previousLinkedEntities
+				where !Linker.EntityExists (updatedLinkedEntities, entity)
+				select entity).ToArray ();
+
+			CommitNewReverseLinks (updatedEntity, property, newLinkedEntities);
+
+			RemoveOldReverseLinks (updatedEntity, property, oldLinkedEntities);
+		}
+
+		public void CommitNewReverseLinks(BaseEntity entity, PropertyInfo property, BaseEntity[] newLinkedEntities)
+		{
+			var otherPropertyName = Linker.GetOtherPropertyName (property);
+
+			if (!String.IsNullOrEmpty (otherPropertyName)) {
+				foreach (var newLinkedEntity in newLinkedEntities) {
+					Linker.RemoveReturnLink (entity, property, newLinkedEntity, otherPropertyName);
+
+					if (!Data.PendingUpdate.Contains (newLinkedEntity))
+						Data.DelayUpdate (newLinkedEntity);
+				}
+			}
+		}
+
+		public void RemoveOldReverseLinks(BaseEntity entity, PropertyInfo property, BaseEntity[] oldLinkedEntities)
+		{
+			var otherPropertyName = Linker.GetOtherPropertyName (property);
+
+			if (!String.IsNullOrEmpty (otherPropertyName)) {
+				foreach (var oldLinkedEntity in oldLinkedEntities) {
+					Linker.RemoveReturnLink (entity, property, oldLinkedEntity, otherPropertyName);
+
+					if (!Data.PendingUpdate.Contains (oldLinkedEntity))
+						Data.DelayUpdate (oldLinkedEntity);
+				}
 			}
 		}
 	}
