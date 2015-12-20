@@ -25,70 +25,83 @@ namespace datamanager.Data
 			Linker = new EntityLinker ();
 		}
 
+		public void SaveLinkedEntities(BaseEntity entity)
+		{
+			foreach (var property in entity.GetType().GetProperties()) {
+				if (Linker.IsLinkProperty (entity, property)) {
+					SaveLinkedEntities (entity, property);
+				}
+			}
+		}
+
+		public void SaveLinkedEntities(BaseEntity entity, PropertyInfo property)
+		{
+			var linkedEntities = Linker.GetLinkedEntities (entity, property);
+
+			foreach (var e in linkedEntities) {
+				if (!Data.Exists(e))
+					Data.Save (e);
+			}
+		}
+
+
+		public void UpdateLinkedEntities(BaseEntity entity)
+		{
+			foreach (var property in entity.GetType().GetProperties()) {
+				if (Linker.IsLinkProperty (entity, property)) {
+					UpdateLinkedEntities (entity, property);
+				}
+			}
+		}
+
+		public void UpdateLinkedEntities(BaseEntity entity, PropertyInfo property)
+		{
+			var linkedEntities = Linker.GetLinkedEntities (entity, property);
+
+			foreach (var e in linkedEntities) {
+				if (Data.Exists(e))
+					Data.Update (e);
+			}
+		}
+
 		public void CommitLinks(BaseEntity entity)
 		{
 			var previousEntity = Data.Get (entity.GetType(), entity.Id);
 
 			FindAndFixDifferences (previousEntity, entity);
-		
-			// TODO: Finish off
-			//throw new NotImplementedException ();
-			/*if (entity.Log.HasEntries) {
-				foreach (var logEntry in entity.Log.Entries) {
-					if (logEntry is EntityLogAddEntry) {
-						var target = (BaseEntity)logEntry.Link.Target;
-
-						if (target.IsPendingLinkCommit) {
-							target.IsPendingLinkCommit = false; // Mark as false here otherwise there will be an infinite loop
-							Data.Save (target);
-						}
-					}
-				}
-			}*/
-
-		}
-
-		public void Link(BaseEntity left, BaseEntity right)
-		{
-			throw new NotImplementedException ();
-			// Possibly obsolete
-			/*foreach (var property in left.GetType().GetProperties()) {
-				if (PropertyLinksToType (left, property, right.GetType ())) {
-
-					var otherPropertyName = "";
-
-					if (IsLinkedProperty (property, out otherPropertyName)) {
-						AddReturnLink (left, property, right, otherPropertyName);
-					}
-				}
-			}*/
 		}
 
 		public void RemoveLinks (BaseEntity entity)
 		{
-			//Console.WriteLine ("Removing links");
-
-			var linker = new EntityLinker ();
+			if (Data.IsVerbose)
+			{
+				Console.WriteLine ("Removing links between '" + entity.GetType().Name + "' and other entities");
+			}
 
 			foreach (var property in entity.GetType().GetProperties()) {
 				var otherPropertyName = "";
 
 				// TODO: Clean up if statement
-				if ((linker.PropertyHasLinkAttribute(property, out otherPropertyName)
-					|| linker.IsLinkProperty(entity, property))
+				if ((Linker.PropertyHasLinkAttribute(property, out otherPropertyName)
+					|| Linker.IsLinkProperty(entity, property))
 					&& !String.IsNullOrEmpty(otherPropertyName))
 				{
-					if (!String.IsNullOrEmpty (otherPropertyName)) {
-						var linkedEntities = linker.GetLinkedEntities (entity, property);
+					RemoveLinks (entity, property, otherPropertyName);
+				}
+			}
+		}
 
-						foreach (var linkedEntity in linkedEntities) {
-							if (linkedEntity != null) {
-								linker.RemoveReturnLink (entity, property, linkedEntity, otherPropertyName);
+		public void RemoveLinks(BaseEntity entity, PropertyInfo property, string otherPropertyName)
+		{
+			if (!String.IsNullOrEmpty (otherPropertyName)) {
+				var linkedEntities = Linker.GetLinkedEntities (entity, property);
 
-								// TODO: Delay update until all references are fixed
-								Data.Update (linkedEntity);
-							}
-						}
+				foreach (var linkedEntity in linkedEntities) {
+					if (linkedEntity != null) {
+						Linker.RemoveReturnLink (entity, property, linkedEntity, otherPropertyName);
+
+						// TODO: Delay update until all references are fixed
+						Data.Update (linkedEntity);
 					}
 				}
 			}
@@ -114,38 +127,57 @@ namespace datamanager.Data
 
 		public void FindAndFixDifferences(BaseEntity previousEntity, BaseEntity updatedEntity, PropertyInfo property)
 		{
-			// TODO: Clean up
-			//var allEntitiesPendingUpdate = new List<BaseEntity> ();
+		//	FindAndFixNewLinks(previousE
 
-			BaseEntity[] previousLinkedEntities;
+			//var newLinkedEntities = GetNewLinkedEntities ();
+			//var oldLinkedEntities = GetLinkedEntitiesMissingFromEntity();
+		
+			var previousLinkedEntities = GetLinkedEntitiesFromPreviousEntity (previousEntity, property);
 
-			if (previousEntity != null)
-				previousLinkedEntities = Linker.GetLinkedEntities (previousEntity, property);
-			else
-				previousLinkedEntities = new BaseEntity[]{ };
-
-			var updatedLinkedEntities = Linker.GetLinkedEntities (updatedEntity, property);
-
-			var newLinkedEntities = (from entity in updatedLinkedEntities
-				where !Linker.EntityExists (previousLinkedEntities, entity)
-				select entity).ToArray ();
-
-			var oldLinkedEntities = (from entity in previousLinkedEntities
-				where !Linker.EntityExists (updatedLinkedEntities, entity)
-				select entity).ToArray ();
-
-			CommitNewReverseLinks (updatedEntity, property, newLinkedEntities);
+			SyncNewReverseLinks (updatedEntity, property, newLinkedEntities);
 
 			RemoveOldReverseLinks (updatedEntity, property, oldLinkedEntities);
 		}
 
-		public void CommitNewReverseLinks(BaseEntity entity, PropertyInfo property, BaseEntity[] newLinkedEntities)
+		public BaseEntity[] GetNewLinkedEntities()
+		{
+			var previousLinkedEntities = GetLinkedEntitiesFromPreviousEntity (previousEntity, property);
+			var updatedLinkedEntities = GetLinkedEntitiesFromUpdatedEntity (previousEntity, property);
+
+			var newLinkedEntities = (from entity in updatedLinkedEntities
+				where !Linker.EntityExists (previousLinkedEntities, entity)
+				select entity).ToArray ();
+		}
+
+		public BaseEntity[] GetLinkedEntitiesFromPreviousEntity(BaseEntity previousEntity, PropertyInfo property)
+		{
+			if (previousEntity != null)
+				return Linker.GetLinkedEntities (previousEntity, property);
+			else
+				return new BaseEntity[]{ };
+		}
+
+		public BaseEntity[] GetLinkedEntitiesFromUpdatedEntity(BaseEntity updatedEntity, PropertyInfo property)
+		{
+			var updatedLinkedEntities = Linker.GetLinkedEntities (updatedEntity, property);
+
+			return updatedLinkedEntities;
+		}
+
+		public BaseEntity[] GetLinkedEntitiesMissingFromEntity(BaseEntity[] previousLinkedEntities, PropertyInfo updatedLinkedEntities)
+		{
+			var oldLinkedEntities = (from entity in previousLinkedEntities
+			where !Linker.EntityExists (updatedLinkedEntities, entity)
+			select entity).ToArray ();
+		}
+
+		public void SyncNewReverseLinks(BaseEntity entity, PropertyInfo property, BaseEntity[] newLinkedEntities)
 		{
 			var otherPropertyName = Linker.GetOtherPropertyName (property);
 
 			if (!String.IsNullOrEmpty (otherPropertyName)) {
 				foreach (var newLinkedEntity in newLinkedEntities) {
-					Linker.RemoveReturnLink (entity, property, newLinkedEntity, otherPropertyName);
+					Linker.AddReturnLink (entity, property, newLinkedEntity, otherPropertyName);
 
 					if (!Data.PendingUpdate.Contains (newLinkedEntity))
 						Data.DelayUpdate (newLinkedEntity);

@@ -8,6 +8,8 @@ namespace datamanager.Entities
 	[JsonObject(IsReference = true)]
 	public class ExampleReferenceLeft : BaseEntity
 	{
+		public int NumberValue = 0;
+
 		[TwoWay("Left")]
 		public ExampleReferenceRight[] Right { get; set; }
 

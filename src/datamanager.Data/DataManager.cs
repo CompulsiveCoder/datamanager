@@ -52,6 +52,14 @@ namespace datamanager.Data
 			Client = new RedisClient ();
 		}
 
+		public void SaveOrUpdate(BaseEntity entity)
+		{
+			if (Exists (entity))
+				Update (entity);
+			else
+				Save (entity);
+		}
+
 		public void Save(BaseEntity entity)
 		{
 			Saver.Save (entity);
@@ -109,6 +117,16 @@ namespace datamanager.Data
 		public bool Exists(BaseEntity entity)
 		{
 			return Get(entity.GetType(), entity.Id) != null;
+		}
+
+		public void SaveLinkedEntities(BaseEntity entity)
+		{
+			Linker.SaveLinkedEntities (entity);
+		}
+
+		public void UpdateLinkedEntities(BaseEntity entity)
+		{
+			Linker.UpdateLinkedEntities (entity);
 		}
 
 		#region IDisposable implementation

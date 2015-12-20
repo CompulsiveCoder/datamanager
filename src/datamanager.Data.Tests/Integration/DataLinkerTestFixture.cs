@@ -75,6 +75,56 @@ namespace datamanager.Data.Tests
 			// The "left.Right" property should now be empty
 			Assert.IsEmpty (newLeft.Right, "Linker failed to remove the link.");
 		}
+
+		[Test]
+		public void Test_SaveLinkedEntities()
+		{
+			var data = new DataManager();
+
+			var left = new ExampleReferenceLeft ();
+			var right = new ExampleReferenceRight ();
+
+			left.Right = new ExampleReferenceRight[]{right};
+
+			data.Save(left);
+
+			right.Left = left;
+
+			data.SaveLinkedEntities (left);
+
+
+			var foundRight = data.Get<ExampleReferenceRight> (right.Id);
+
+			// The "right" object should now be found in the data store
+			Assert.IsNotNull (foundRight, "Linker failed to save the other entity.");
+		}
+
+
+		[Test]
+		public void Test_UpdateLinkedEntities()
+		{
+			var data = new DataManager();
+
+			var left = new ExampleReferenceLeft ();
+			var right = new ExampleReferenceRight ();
+
+			left.Right = new ExampleReferenceRight[]{right};
+
+			data.Save(left);
+
+			right.Left = left;
+
+			data.Save (right);
+
+			right.NumberValue = 2;
+
+			data.UpdateLinkedEntities (left);
+
+			var foundRight = data.Get<ExampleReferenceRight> (right.Id);
+
+			// The "right" object should have been updated in the data store
+			Assert.AreEqual(2, foundRight.NumberValue, "Linker failed to update the other entity.");
+		}
 	}
 }
 

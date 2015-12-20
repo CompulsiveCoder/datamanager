@@ -33,7 +33,7 @@ namespace datamanager.Data
 				Data.IdManager.Add (entity);
 
 			} else
-				Data.Update (entity);
+				throw new Exception ("'" + entity.GetType ().Name + "' already found with the same ID. Try updating the entity instead of saving it.");
 		}
 	}
 }

@@ -207,20 +207,12 @@ namespace datamanager.Entities
 
 			var value = property.GetValue (entity);
 
-			// TODO: Clean up
 			if (value != null) {
-//<<<<<<< HEAD
-//				if (IsEntityProperty (property)) {
-//					list.Add ((BaseEntity)value);
-//				} else if (IsEntityArrayProperty (property)) {
-//					list.AddRange ((BaseEntity[])value);
-//=======
 				if (IsEntityProperty (property)) {
 					list.Add ((BaseEntity)value);
 				} else {
 					if (((BaseEntity[])value).Length > 0)
 						list.AddRange ((BaseEntity[])value);
-//>>>>>>> master
 				}
 			}
 
