@@ -5,7 +5,7 @@ using datamanager.Entities;
 namespace datamanager.Data.Tests.Integration
 {
 	[TestFixture]
-	public class EntityTestFixture : BaseTestFixture
+	public class EntityTestFixture : BaseDataTestFixture
 	{
 		[Test]
 		public void Test_SaveReadAndList()

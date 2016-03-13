@@ -37,10 +37,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="BaseTestFixture.cs" />
     <Compile Include="Unit\DataSaverTestFixture.cs" />
     <Compile Include="Unit\DataUpdaterTestFixture.cs" />
     <Compile Include="Unit\DataLinkerUnitTestFixture.cs" />
+    <Compile Include="BaseDataTestFixture.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

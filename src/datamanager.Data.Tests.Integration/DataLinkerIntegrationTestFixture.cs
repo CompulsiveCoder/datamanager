@@ -5,8 +5,28 @@ using datamanager.Entities;
 namespace datamanager.Data.Tests.Integration
 {
 	[TestFixture]
-	public class DataLinkerIntegrationTestFixture : BaseTestFixture
+	public class DataLinkerIntegrationTestFixture : BaseDataIntegrationTestFixture
 	{
+
+		/// <summary>
+		/// Ensure that an exception is thrown when a linked entity hasn't been saved yet. This is necessary because the linker cannot synchronise
+		/// links with an entity that isn't in the data store.
+		/// // TODO: Add a way to disable this check
+		/// </summary>
+		[Test]
+		public void Test_CommitLinks_NonSavedEntity()
+		{
+			var left = new ExampleReferenceLeft ();
+			var right = new ExampleReferenceRight ();
+
+			right.Left = left;
+
+			// Try to save the "right" object without first saving the "left" object. It should throw an exception because it can't sync with
+			// a non-existent entity
+			Data.Linker.CommitLinks(right);
+		}
+
+
 		[Test]
 		public void Test_TwoWayReference_Add()
 		{

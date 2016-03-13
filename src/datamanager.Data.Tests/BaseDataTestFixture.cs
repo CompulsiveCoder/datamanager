@@ -3,9 +3,9 @@ using NUnit.Framework;
 
 namespace datamanager.Data.Tests
 {
-	public class BaseTestFixture
+	public class BaseDataTestFixture
 	{
-		public BaseTestFixture ()
+		public BaseDataTestFixture ()
 		{
 		}
 
