@@ -46,7 +46,6 @@
     <Compile Include="DataIdManager.cs" />
     <Compile Include="BaseDataAdapter.cs" />
     <Compile Include="DataManager.cs" />
-    <Compile Include="AlreadyExistsException.cs" />
     <Compile Include="DataDeleter.cs" />
     <Compile Include="DataKeys.cs" />
     <Compile Include="DataLinker.cs" />
@@ -56,6 +55,9 @@
     <Compile Include="DataUpdater.cs" />
     <Compile Include="DataPreparer.cs" />
     <Compile Include="DataConfig.cs" />
+    <Compile Include="EntityNotFoundException.cs" />
+    <Compile Include="EntityAlreadyExistsException.cs" />
+    <Compile Include="UnsavedLinksException.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

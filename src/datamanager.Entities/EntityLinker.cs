@@ -34,7 +34,6 @@ namespace datamanager.Entities
 
 		public void RemoveReturnLink(BaseEntity entity, PropertyInfo property, BaseEntity targetEntity, string targetEntityPropertyName)
 		{
-			
 			if (entity == null)
 				throw new ArgumentNullException ("entity");
 			

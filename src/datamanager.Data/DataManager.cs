@@ -25,7 +25,7 @@ namespace datamanager.Data
 
 		public string Prefix { get;set; }
 
-		public bool IsVerbose = false;
+		public bool IsVerbose = true;
 
 		public DataManager ()
 		{
@@ -54,27 +54,61 @@ namespace datamanager.Data
 
 		public void SaveOrUpdate(BaseEntity entity)
 		{
+			if (IsVerbose)
+				Console.WriteLine ("Save/update");
+			
 			if (Exists (entity))
 				Update (entity);
 			else
 				Save (entity);
 		}
 
+		public void Save(BaseEntity[] entities)
+		{
+			foreach (var entity in entities) {
+				Save (entity);
+			}
+		}
+
 		public void Save(BaseEntity entity)
 		{
 			Saver.Save (entity);
+
+			CommitPending ();
+		}
+
+		/*public void Save(BaseEntity entity, bool saveLinkedEntities)
+		{
+			Save (entity);
+
+			// TODO: Should linked entities be saved before or after?
+			if (saveLinkedEntities)
+				SaveLinkedEntities (entity);
+		}*/
+
+
+		public void Update(BaseEntity[] entities)
+		{
+			foreach (var entity in entities) {
+				Update (entity);
+			}
 		}
 
 		public void Update(BaseEntity entity)
 		{
 			Updater.Update (entity);
 
-			while (PendingUpdate.Count > 0)
-			{
-				Updater.Update (PendingUpdate[0]);
-				PendingUpdate.RemoveAt (0);
-			}
+			CommitPending ();
 		}
+
+		/*public void Update(BaseEntity entity, bool saveLinkedEntities)
+		{
+			Save (entity);
+
+			// TODO: Should linked entities be saved before or after?
+			if (saveLinkedEntities)
+				SaveLinkedEntities (entity);
+		}*/
 
 		public void DelayUpdate(BaseEntity entity)
 		{
@@ -86,17 +120,45 @@ namespace datamanager.Data
 		{
 			Deleter.Delete (entity);
 
-			while (PendingDelete.Count > 0)
-			{
-				Deleter.Delete (PendingDelete[0]);
-				PendingDelete.RemoveAt (0);
-			}
+			CommitPending ();
 		}
 
 		public void DelayDelete(BaseEntity entity)
 		{
 			if (!PendingDelete.Contains(entity))
 				PendingDelete.Add (entity);
+		}
+
+		public void CommitPending()
+		{
+			CommitPendingUpdates ();
+
+			CommitPendingDeletes ();
+		}
+
+		public void CommitPendingUpdates()
+		{
+			while (PendingUpdate.Count > 0)
+			{
+				try
+				{
+					Updater.Update (PendingUpdate[0]);
+					PendingUpdate.RemoveAt (0);
+				}
+				catch (EntityNotFoundException ex) {
+					throw new UnsavedLinksException (ex.Entity);
+				}
+			}
+		}
+
+		// TODO: Should delayed deletion be removed? It's not currently being used by the data linker.
+		public void CommitPendingDeletes()
+		{
+			while (PendingDelete.Count > 0)
+			{
+				Deleter.Delete (PendingDelete[0]);
+				PendingDelete.RemoveAt (0);
+			}
 		}
 
 		public T Get<T>(string id)
@@ -116,7 +178,14 @@ namespace datamanager.Data
 
 		public bool Exists(BaseEntity entity)
 		{
-			return Get(entity.GetType(), entity.Id) != null;
+			var foundEntity = Get(entity.GetType(), entity.Id);
+
+			var exists = foundEntity != null;
+
+			if (IsVerbose)
+				Console.WriteLine ("Exists: " + exists);
+
+			return exists;
 		}
 
 		public void SaveLinkedEntities(BaseEntity entity)

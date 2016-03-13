@@ -46,6 +46,7 @@
     <Compile Include="EntityCloner.cs" />
     <Compile Include="Examples\OneWayReference\ExampleReferenceSource.cs" />
     <Compile Include="Examples\OneWayReference\ExampleReferenceTarget.cs" />
+    <Compile Include="Examples\SimpleEntity.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

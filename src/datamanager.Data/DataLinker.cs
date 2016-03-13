@@ -27,6 +27,9 @@ namespace datamanager.Data
 
 		public void SaveLinkedEntities(BaseEntity entity)
 		{
+			if (Data.IsVerbose)
+				Console.WriteLine ("Saving all entities linked to '"  + entity.GetType().Name + "'.");
+			
 			foreach (var property in entity.GetType().GetProperties()) {
 				if (Linker.IsLinkProperty (entity, property)) {
 					SaveLinkedEntities (entity, property);
@@ -47,6 +50,9 @@ namespace datamanager.Data
 
 		public void UpdateLinkedEntities(BaseEntity entity)
 		{
+			if (Data.IsVerbose)
+				Console.WriteLine ("Updating all entities linked to '"  + entity.GetType().Name + "'.");
+			
 			foreach (var property in entity.GetType().GetProperties()) {
 				if (Linker.IsLinkProperty (entity, property)) {
 					UpdateLinkedEntities (entity, property);
@@ -100,8 +106,8 @@ namespace datamanager.Data
 					if (linkedEntity != null) {
 						Linker.RemoveReturnLink (entity, property, linkedEntity, otherPropertyName);
 
-						// TODO: Delay update until all references are fixed
-						Data.Update (linkedEntity);
+						// Delay update until all references are fixed
+						Data.DelayUpdate (linkedEntity);
 					}
 				}
 			}
@@ -118,38 +124,38 @@ namespace datamanager.Data
 
 		public void FindAndFixDifferences(BaseEntity previousEntity, BaseEntity updatedEntity, PropertyInfo property)
 		{
-			var previousLinkedEntities = new BaseEntity[]{ };
+			var previousLinks = new BaseEntity[]{ };
 
 			if (previousEntity != null)
-				previousLinkedEntities = Linker.GetLinkedEntities (previousEntity, property);
+				previousLinks = Linker.GetLinkedEntities (previousEntity, property);
 
-			var updatedLinkedEntities = Linker.GetLinkedEntities (updatedEntity, property);
+			var updatedLinks = Linker.GetLinkedEntities (updatedEntity, property);
 
-			var newLinkedEntities = IdentifyEntityLinksToAdd (previousLinkedEntities, updatedLinkedEntities);
+			var linksToAdd = IdentifyEntityLinksToAdd (previousLinks, updatedLinks);
 
-			var oldLinkedEntities = IdentifyEntityLinksToRemove (previousLinkedEntities, updatedLinkedEntities);
+			var linksToRemove = IdentifyEntityLinksToRemove (previousLinks, updatedLinks);
 
-			CommitNewReverseLinks (updatedEntity, property, newLinkedEntities);
+			CommitNewReverseLinks (updatedEntity, property, linksToAdd);
 
-			RemoveOldReverseLinks (updatedEntity, property, oldLinkedEntities);
+			RemoveOldReverseLinks (updatedEntity, property, linksToRemove);
 		}
 
 		public BaseEntity[] IdentifyEntityLinksToAdd(BaseEntity[] previousLinkedEntities, BaseEntity[] updatedLinkedEntities)
 		{
-			var newLinkedEntities = (from entity in updatedLinkedEntities
+			var linksToAdd = (from entity in updatedLinkedEntities
 				where !Linker.EntityExists (previousLinkedEntities, entity)
 				select entity).ToArray ();
 
-			return newLinkedEntities;
+			return linksToAdd;
 		}
 
 		public BaseEntity[] IdentifyEntityLinksToRemove(BaseEntity[] previousLinkedEntities, BaseEntity[] updatedLinkedEntities)
 		{
-			var oldLinkedEntities = (from entity in previousLinkedEntities
+			var linksToRemove = (from entity in previousLinkedEntities
 				where !Linker.EntityExists (updatedLinkedEntities, entity)
 				select entity).ToArray ();
 
-			return oldLinkedEntities;
+			return linksToRemove;
 		}
 
 		public void CommitNewReverseLinks(BaseEntity entity, PropertyInfo property, BaseEntity[] newLinkedEntities)

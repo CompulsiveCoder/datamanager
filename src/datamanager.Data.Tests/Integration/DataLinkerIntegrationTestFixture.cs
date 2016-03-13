@@ -2,10 +2,10 @@
 using NUnit.Framework;
 using datamanager.Entities;
 
-namespace datamanager.Data.Tests
+namespace datamanager.Data.Tests.Integration
 {
 	[TestFixture]
-	public class DataLinkerTestFixture : BaseTestFixture
+	public class DataLinkerIntegrationTestFixture : BaseTestFixture
 	{
 		[Test]
 		public void Test_TwoWayReference_Add()
@@ -34,7 +34,7 @@ namespace datamanager.Data.Tests
 			var left = new ExampleReferenceLeft ();
 			var right = new ExampleReferenceRight ();
 
-			left.Right = new ExampleReferenceRight[]{right};
+			// left.Right = new ExampleReferenceRight[]{right};// TODO: Remove if not needed
 
 			data.Save(left);
 
@@ -55,18 +55,25 @@ namespace datamanager.Data.Tests
 		[Test]
 		public void Test_TwoWayReference_RemoveOnDelete()
 		{
+
+			Console.WriteLine ("");
+			Console.WriteLine ("Preparing test...");
+			Console.WriteLine ("");
+
 			var data = new DataManager();
 
 			var left = new ExampleReferenceLeft ();
 			var right = new ExampleReferenceRight ();
-
-			left.Right = new ExampleReferenceRight[]{right};
 
 			data.Save(left);
 
 			right.Left = left;
 
 			data.Save (right);
+
+			Console.WriteLine ("");
+			Console.WriteLine ("Executing test code...");
+			Console.WriteLine ("");
 
 			data.Delete(right);
 
@@ -86,9 +93,9 @@ namespace datamanager.Data.Tests
 
 			left.Right = new ExampleReferenceRight[]{right};
 
-			data.Save(left);
+			//data.Save(left);
 
-			right.Left = left;
+			//right.Left = left;
 
 			data.SaveLinkedEntities (left);
 
@@ -108,9 +115,10 @@ namespace datamanager.Data.Tests
 			var left = new ExampleReferenceLeft ();
 			var right = new ExampleReferenceRight ();
 
-			left.Right = new ExampleReferenceRight[]{right};
 
 			data.Save(left);
+
+			//left.Right = new ExampleReferenceRight[]{right}; // TODO: Remove. This shouldn't be needed
 
 			right.Left = left;
 

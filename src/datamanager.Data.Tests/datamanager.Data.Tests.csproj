@@ -31,6 +31,7 @@
     <Reference Include="System" />
     <Reference Include="nunit.framework">
       <HintPath>..\..\lib\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+      <Package>nunit</Package>
     </Reference>
     <Reference Include="System.Xml.Serialization" />
     <Reference Include="System.Xml" />
@@ -39,11 +40,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BaseTestFixture.cs" />
     <Compile Include="Integration\EntityTestFixture.cs" />
-    <Compile Include="Integration\DataLinkerTestFixture.cs" />
+    <Compile Include="Unit\DataSaverTestFixture.cs" />
+    <Compile Include="Unit\DataUpdaterTestFixture.cs" />
+    <Compile Include="Integration\DataLinkerIntegrationTestFixture.cs" />
+    <Compile Include="Unit\DataLinkerUnitTestFixture.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Integration\" />
+    <Folder Include="Unit\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\datamanager.Data\datamanager.Data.csproj">

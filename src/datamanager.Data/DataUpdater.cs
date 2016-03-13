@@ -25,7 +25,7 @@ namespace datamanager.Data
 				var key = Keys.GetKey (entity);
 				Data.Client.Set (key, Data.Preparer.PrepareForStorage (entity).ToJson ());
 			} else
-				throw new Exception ("Cannot update '" + entity.GetType ().Name + "' entity. Not found in data store.");
+				throw new EntityNotFoundException (entity);
 		}
 	}
 }
