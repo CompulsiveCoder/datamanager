@@ -1,4 +1,9 @@
-wget http://nuget.org/nuget.exe
+NUGET_FILE="nuget.exe"
+ 
+if [ ! -f "$NUGET_FILE" ];
+then
+    wget http://nuget.org/nuget.exe
+fi
 
 mono nuget.exe install sider
 mono nuget.exe install newtonsoft.json
