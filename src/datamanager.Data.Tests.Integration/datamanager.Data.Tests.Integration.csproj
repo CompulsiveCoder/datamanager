@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C3847E16-2B96-4CEC-8110-11C32CA1D4A1}</ProjectGuid>
+    <ProjectGuid>{E30CF0B8-E352-4250-906E-D8FB37AAD404}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>datamanager.Data.Tests</RootNamespace>
-    <AssemblyName>datamanager.Data.Tests</AssemblyName>
+    <RootNamespace>datamanager.Data.Tests.Integration</RootNamespace>
+    <AssemblyName>datamanager.Data.Tests.Integration</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -32,24 +32,21 @@
     <Reference Include="nunit.framework">
       <HintPath>..\..\lib\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="System.Xml.Serialization" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="BaseTestFixture.cs" />
-    <Compile Include="Unit\DataSaverTestFixture.cs" />
-    <Compile Include="Unit\DataUpdaterTestFixture.cs" />
-    <Compile Include="Unit\DataLinkerUnitTestFixture.cs" />
+    <Compile Include="DataLinkerIntegrationTestFixture.cs" />
+    <Compile Include="EntityTestFixture.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="Unit\" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\datamanager.Data\datamanager.Data.csproj">
       <Project>{ABD79A28-4EDC-4400-9583-4CB96F5E84B9}</Project>
       <Name>datamanager.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\datamanager.Data.Tests\datamanager.Data.Tests.csproj">
+      <Project>{C3847E16-2B96-4CEC-8110-11C32CA1D4A1}</Project>
+      <Name>datamanager.Data.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\datamanager.Entities\datamanager.Entities.csproj">
       <Project>{440222A1-E669-451C-AF43-D6BF7FFAADF0}</Project>
