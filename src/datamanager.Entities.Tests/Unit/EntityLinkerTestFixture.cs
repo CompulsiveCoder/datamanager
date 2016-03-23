@@ -20,18 +20,37 @@ namespace datamanager.Entities.Tests
 			//Assert.IsNotNull (target.Left, "Reverse link failed.");
 		}
 
-		[Test]
+		// TODO: Remove if not needed
+		//[Test]
 		public void Test_AddLink_TwoWay_SingleEntity()
 		{
-			var left = new ExampleReferenceLeft ();
-			var right = new ExampleReferenceRight ();
+			var invoice = new ExampleInvoice ();
+			var invoiceItem = new ExampleInvoiceItem ();
 
 			var adder = new EntityLinker ();
 
-			adder.AddLink (left, "Right", right);
+			adder.AddLink (invoice, "Right", invoiceItem);
 
-			Assert.IsNotNull (left.Right, "Link failed.");
-			Assert.IsNotNull (right.Left, "Reverse link failed.");
+			Assert.IsNotNull (invoice.Items, "Link failed.");
+			Assert.AreEqual(1, invoice.Items.Length, "Link failed.");
+			Assert.IsNotNull (invoiceItem.Invoice, "Reverse link failed.");
+		}
+
+		[Test]
+		public void Test_RemoveEntityFromObject_Array()
+		{
+			var linker = new EntityLinker ();
+
+			var entity = new ExampleInvoiceItem ();
+
+			var obj = new ExampleInvoiceItem[]{entity};
+
+			var propertyInfo = typeof(ExampleInvoice).GetProperty ("Items");
+
+			var newObj = linker.RemoveEntityFromObject (entity, obj, propertyInfo);
+
+			Assert.IsNotNull (newObj);
+			Assert.AreEqual (0, ((ExampleInvoiceItem[])newObj).Length);
 		}
 	}
 }

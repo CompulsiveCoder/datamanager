@@ -6,25 +6,37 @@ namespace datamanager.Data
 {
 	public class DataUpdater : BaseDataAdapter
 	{
-		public DataUpdater ()
-		{
-		}
+		public DataManagerSettings Settings;
 
-		public DataUpdater (DataManager dataManager) : base (dataManager)
+		public DataKeys Keys;
+
+		public DataChecker Checker;
+		public DataLinker Linker;
+		public DataPreparer Preparer;
+
+		public BaseRedisClientWrapper Client;
+
+
+		public DataUpdater (DataManagerSettings settings, DataKeys keys, DataLinker linker, DataPreparer preparer, DataChecker checker, BaseRedisClientWrapper client) : base(client)
 		{
+			Settings = settings;
+			Keys = keys;
+			Linker = linker;
+			Preparer = preparer;
+			Checker = checker;
 		}
 
 		public void Update(BaseEntity entity)
 		{
-			if (Data.Exists (entity)) {
-				if (Data.IsVerbose)
+			if (Checker.Exists (entity)) {
+				if (Settings.IsVerbose)
 					Console.WriteLine ("Updating: " + entity.GetType ().Name);
 
-				Data.Linker.CommitLinks (entity);
+				Linker.CommitLinks (entity);
 
 				var key = Keys.GetKey (entity);
-				Data.Client.Set (key, Data.Preparer.PrepareForStorage (entity).ToJson ());
-			} else
+				Client.Set (key, Preparer.PrepareForStorage (entity).ToJson ());
+			}// else if (!Data.PendingSave.Contains(entity)) // TODO: Remove if not needed
 				throw new EntityNotFoundException (entity);
 		}
 	}

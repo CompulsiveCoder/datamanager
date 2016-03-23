@@ -12,15 +12,18 @@ namespace datamanager.Data.Tests.Unit
 		/// links with an entity that isn't in the data store.
 		/// // TODO: Add a way to disable this check
 		/// </summary>
-		[Test]
+		//[Test]
 		public void Test_CommitLinks_NonSavedEntity()
 		{
+			// TODO: Remove if not needed
+			throw new NotImplementedException ();
+
 			var data = new DataManager();
 
-			var left = new ExampleReferenceLeft ();
-			var right = new ExampleReferenceRight ();
+			var left = new ExampleInvoice ();
+			var right = new ExampleInvoiceItem ();
 
-			right.Left = left;
+			right.Invoice = left;
 
 			// Try to save the "right" object without first saving the "left" object. It should throw an exception because it can't sync with
 			// a non-existent entity

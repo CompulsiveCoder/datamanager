@@ -18,7 +18,7 @@ namespace datamanager.Data.Tests
 		{
 			Console.WriteLine ("Setting up test fixture " + this.GetType ().FullName);
 
-			Data = new DataManager ();
+			Data = new DataManager ("Test-" + Guid.NewGuid ().ToString());
 		}
 
 		[TearDown]

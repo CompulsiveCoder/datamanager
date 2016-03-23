@@ -7,36 +7,55 @@ namespace datamanager.Data
 {
 	public class DataLister : BaseDataAdapter
 	{
-		public DataLister ()
+		public DataTypeManager TypeManager;
+		public DataIdManager IdManager;
+		public DataReader Reader;
+
+		public DataLister (DataTypeManager typeManager, DataIdManager idManager, DataReader reader, BaseRedisClientWrapper client) : base (client)
 		{
+			TypeManager = typeManager;
+			IdManager = idManager;
+			Reader = reader;
 		}
 
-		public DataLister (DataManager dataManager) : base (dataManager)
-		{
-		}
 
 		public T[] Get<T>()
 		{
-			var ids = Data.IdManager.GetIds(typeof(T));
+			var ids = IdManager.GetIds(typeof(T).Name);
 
 			var entities = new List<T> ();
 			foreach (string id in ids) {
-				entities.Add (Data.Reader.Read<T>(id));
+				entities.Add (Reader.Read<T>(id));
 			}
 			return entities.ToArray();
 		}
 
-		// TODO: Clean up
-		/*public BaseEntity Get(typeof()
+		public BaseEntity[] Get(string entityTypeName)
 		{
-			var ids = Data.IdManager.GetIds(typeof(T));
+			var ids = IdManager.GetIds(entityTypeName);
 
-			var entities = new List<T> ();
+			var entities = new List<BaseEntity> ();
 			foreach (string id in ids) {
-				entities.Add (Data.Reader.Read(id));
+				entities.Add (Reader.Read(entityTypeName, id));
 			}
 			return entities.ToArray();
-		}*/
+		}
+
+		public BaseEntity[] GetAll()
+		{
+			var entities = new List<BaseEntity> ();
+
+			var types = TypeManager.GetTypeNames ();
+
+			foreach (var typeName in types) {
+				var ids = IdManager.GetIds (typeName);
+
+				foreach (string id in ids) {
+					entities.Add (Reader.Read (typeName, id));
+				}
+			}
+			return entities.ToArray();
+		}
 	}
 }
 

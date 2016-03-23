@@ -8,20 +8,28 @@ namespace datamanager.Data
 	{
 		public bool TestMode = false;
 
-		public DataManager Data;
+		// TODO: Remove if not needed
+		//public DataManager Data;
 
-		public DataKeys Keys;
+		public BaseRedisClientWrapper Client;
 
-		public BaseDataAdapter ()
+		//public DataKeys Keys;
+
+		/*public BaseDataAdapter ()
 		{
 			Data = new DataManager ();
-			Keys = new DataKeys (Data.Prefix);
+			Keys = new DataKeys (Data.Settings);
 		}
 
 		public BaseDataAdapter(DataManager data)
 		{
 			Data = data;
-			Keys = new DataKeys (Data.Prefix);
+			Keys = new DataKeys (Data.Settings);
+		}*/
+
+		public BaseDataAdapter(BaseRedisClientWrapper client)
+		{
+			Client = client;
 		}
 
 		public string EntityToJson(BaseEntity entity)

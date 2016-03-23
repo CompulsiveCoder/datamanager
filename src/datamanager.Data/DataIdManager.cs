@@ -7,19 +7,25 @@ namespace datamanager.Data
 {
 	public class DataIdManager
 	{
-		public DataManager Data;
+		public DataKeys Keys { get; set; }
 
-		public DataKeys Keys;
+		public BaseRedisClientWrapper Client { get; set; }
 
-		public DataIdManager (DataManager dataManager)
+		public DataIdManager (DataKeys keys, BaseRedisClientWrapper client)
 		{
-			Data = dataManager;
-			Keys = new DataKeys (Data.Prefix);
+			if (keys == null)
+				throw new ArgumentNullException ("keys");
+
+			if (client == null)
+				throw new ArgumentNullException ("client");
+			
+			Keys = keys;
+			Client = client;
 		}
 
 		public void Add(BaseEntity entity)
 		{
-			var ids = new List<string>(GetIds (entity.GetType()));
+			var ids = new List<string>(GetIds (entity.GetType().Name));
 
 			if (!ids.Contains (entity.Id))
 				ids.Add (entity.Id);
@@ -30,7 +36,7 @@ namespace datamanager.Data
 
 		public void Remove(BaseEntity entity)
 		{
-			var ids = new List<string>(GetIds (entity.GetType()));
+			var ids = new List<string>(GetIds (entity.GetType().Name));
 
 			if (!ids.Contains (entity.Id))
 				ids.Remove (entity.Id);
@@ -38,11 +44,11 @@ namespace datamanager.Data
 			SetIds (entity.GetType (), ids.ToArray ());
 		}
 
-		public string[] GetIds(Type entityType)
+		public string[] GetIds(string entityType)
 		{
 			var idsKey = Keys.GetIdsKey (entityType);
 
-			var idsString = Data.Client.Get (idsKey);
+			var idsString = Client.Get (idsKey);
 
 			var ids = new string[] { };
 
@@ -54,9 +60,9 @@ namespace datamanager.Data
 
 		public void SetIds(Type entityType, string[] ids)
 		{
-			var idsKey = Keys.GetIdsKey (entityType);
+			var idsKey = Keys.GetIdsKey (entityType.Name);
 			var idsString = String.Join (",", ids);
-			Data.Client.Set(idsKey, idsString);
+			Client.Set(idsKey, idsString);
 		}
 
 		public string[] ConvertToStringArray(Guid[] ids)

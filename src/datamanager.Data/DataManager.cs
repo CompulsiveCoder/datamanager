@@ -8,7 +8,11 @@ namespace datamanager.Data
 {
 	public class DataManager : IDisposable
 	{
+		public DataTypeManager TypeManager;
 		public DataIdManager IdManager;
+
+		public DataKeys Keys;
+
 		public DataPreparer Preparer;
 
 		public DataSaver Saver;
@@ -17,13 +21,17 @@ namespace datamanager.Data
 		public DataReader Reader;
 		public DataLister Lister;
 		public DataLinker Linker;
+		public DataChecker Checker;
 
-		public RedisClient Client;
+		public EntityLinker EntityLinker;
 
+		public BaseRedisClientWrapper Client;
+
+		public List<BaseEntity> PendingSave = new List<BaseEntity>();
 		public List<BaseEntity> PendingUpdate = new List<BaseEntity>();
 		public List<BaseEntity> PendingDelete = new List<BaseEntity>();
 
-		public string Prefix { get;set; }
+		public DataManagerSettings Settings = new DataManagerSettings();
 
 		public bool IsVerbose = true;
 
@@ -32,24 +40,44 @@ namespace datamanager.Data
 			Construct ();
 		}
 
+		public DataManager (string prefix)
+		{
+			Settings.Prefix = prefix;
+			Construct ();
+		}
+
+		public DataManager (DataManagerSettings settings)
+		{
+			Settings = settings;
+			Construct ();
+		}
+
 		public void Construct()
 		{
-			IdManager = new DataIdManager (this);
-			Preparer = new DataPreparer (this);
-
-			Saver = new DataSaver (this);
-			Deleter = new DataDeleter (this);
-			Updater = new DataUpdater (this);
-			Reader = new DataReader (this);
-			Lister = new DataLister (this);
-			Linker = new DataLinker (this);
+			Keys = new DataKeys (Settings);
 
 			Open ();
+
+			TypeManager = new DataTypeManager (Keys, Client);
+			IdManager = new DataIdManager (Keys, Client);
+			//Preparer = new DataPreparer (this);
+
+			EntityLinker = new EntityLinker ();
+
+			Preparer = new DataPreparer (Client);
+			Reader = new DataReader (TypeManager, IdManager, Keys, Client);
+			Checker = new DataChecker (Reader, Settings);
+			Linker = new DataLinker (Settings, Reader, Saver, Updater, Checker, EntityLinker);
+			Saver = new DataSaver (Settings, TypeManager, IdManager, Keys, Preparer, Linker, Checker, Client);
+		
+			Deleter = new DataDeleter (IdManager, Keys, Linker, Client);
+			Updater = new DataUpdater (Settings, Keys, Linker, Preparer, Checker, Client);
+			Lister = new DataLister (TypeManager, IdManager, Reader, Client);
 		}
 
 		public void Open()
 		{
-			Client = new RedisClient ();
+			Client = new RedisClientWrapper ();
 		}
 
 		public void SaveOrUpdate(BaseEntity entity)
@@ -72,8 +100,14 @@ namespace datamanager.Data
 
 		public void Save(BaseEntity entity)
 		{
-			Saver.Save (entity);
+			Save (entity, false);
+		}
 
+		public void Save(BaseEntity entity, bool saveLinkedEntities)
+		{
+			Saver.Save (entity, saveLinkedEntities);
+
+			// TODO: Remove if not needed
 			CommitPending ();
 		}
 
@@ -116,6 +150,12 @@ namespace datamanager.Data
 				PendingUpdate.Add (entity);
 		}
 
+		public void DelaySave(BaseEntity entity)
+		{
+			if (!PendingSave.Contains(entity))
+				PendingSave.Add (entity);
+		}
+
 		public void Delete(BaseEntity entity)
 		{
 			Deleter.Delete (entity);
@@ -131,9 +171,28 @@ namespace datamanager.Data
 
 		public void CommitPending()
 		{
+			if (IsVerbose)
+				Console.WriteLine ("Committing pending entities");
+			
+			// TODO: Remove if not needed
+			//CommitPendingSaves ();
+
 			CommitPendingUpdates ();
 
 			CommitPendingDeletes ();
+		}
+
+		// TODO: Remove if not needed
+		public void CommitPendingSaves()
+		{
+			while (PendingSave.Count > 0)
+			{
+				var entity = PendingSave [0];
+				if (!Exists (entity)) {
+					Saver.Save (entity);
+					PendingSave.RemoveAt (0);
+				}
+			}
 		}
 
 		public void CommitPendingUpdates()
@@ -142,10 +201,15 @@ namespace datamanager.Data
 			{
 				try
 				{
-					Updater.Update (PendingUpdate[0]);
-					PendingUpdate.RemoveAt (0);
+					var entity = PendingUpdate[0];
+					if (Exists(entity))
+					{
+						Updater.Update (entity);
+						PendingUpdate.RemoveAt (0);
+					}
 				}
 				catch (EntityNotFoundException ex) {
+					// TODO: Check if this exception should be thrown
 					throw new UnsavedLinksException (ex.Entity);
 				}
 			}
@@ -171,21 +235,39 @@ namespace datamanager.Data
 			return Lister.Get<T> ();
 		}
 
+		public BaseEntity[] GetAll()
+		{
+			return Lister.GetAll();
+		}
+
+		public BaseEntity Get(string entityTypeName, string entityId)
+		{
+			return Reader.Read (entityTypeName, entityId);
+		}
+
 		public BaseEntity Get(Type entityType, string entityId)
 		{
 			return Reader.Read (entityType, entityId);
 		}
 
+		public Type GetType(string typeName)
+		{
+			return TypeManager.GetType (typeName);
+		}
+
+		public int Count(string typeName)
+		{
+			return Lister.Get (typeName).Length;
+		}
+
 		public bool Exists(BaseEntity entity)
 		{
-			var foundEntity = Get(entity.GetType(), entity.Id);
+			return Checker.Exists (entity);
+		}
 
-			var exists = foundEntity != null;
-
-			if (IsVerbose)
-				Console.WriteLine ("Exists: " + exists);
-
-			return exists;
+		public bool TypeExists(string typeName)
+		{
+			return TypeManager.Exists (typeName);
 		}
 
 		public void SaveLinkedEntities(BaseEntity entity)
@@ -196,6 +278,22 @@ namespace datamanager.Data
 		public void UpdateLinkedEntities(BaseEntity entity)
 		{
 			Linker.UpdateLinkedEntities (entity);
+		}
+
+		public void WriteSummary()
+		{
+			Console.WriteLine ("");
+			Console.WriteLine ("Redis data summary...");
+
+			var types = TypeManager.GetTypes ();
+			if (types.Count == 0)
+				Console.WriteLine ("  [empty]");
+			else {
+				foreach (var typeName in types.Keys) {
+					Console.WriteLine (typeName + ": " + Count (typeName));
+				}
+			}
+			Console.WriteLine ("");
 		}
 
 		#region IDisposable implementation

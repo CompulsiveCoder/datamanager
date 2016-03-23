@@ -5,26 +5,31 @@ namespace datamanager.Data
 {
 	public class DataKeys
 	{
-		public string Prefix;
+		public DataManagerSettings Settings;
 
-		public DataKeys (string prefix)
+		public DataKeys (DataManagerSettings settings)
 		{
-			Prefix = prefix;
+			Settings = settings;
 		}
 
 		public string GetKey(BaseEntity entity)
 		{
-			return GetKey (entity.GetType (), entity.Id);
+			return GetKey (entity.GetType ().Name, entity.Id);
 		}
 
-		public string GetKey(Type entityType, string id)
+		public string GetKey(string entityType, string id)
 		{
-			return Prefix + "-" + entityType.Name + "-" + id;
+			return Settings.Prefix + "-" + entityType + "-" + id;
 		}
 
-		public string GetIdsKey(Type entityType)
+		public string GetIdsKey(string entityType)
 		{
-			return Prefix + "-" + entityType.Name + "-Ids";
+			return Settings.Prefix + "-" + entityType + "-Ids";
+		}
+
+		public string GetTypesKey()
+		{
+			return Settings.Prefix + "-Types";
 		}
 	}
 }

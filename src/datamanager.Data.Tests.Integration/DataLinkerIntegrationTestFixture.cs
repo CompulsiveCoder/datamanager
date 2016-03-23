@@ -13,13 +13,14 @@ namespace datamanager.Data.Tests.Integration
 		/// links with an entity that isn't in the data store.
 		/// // TODO: Add a way to disable this check
 		/// </summary>
-		[Test]
+		// TODO: Remove if not needed
+		//[Test]
 		public void Test_CommitLinks_NonSavedEntity()
 		{
-			var left = new ExampleReferenceLeft ();
-			var right = new ExampleReferenceRight ();
+			var left = new ExampleInvoice ();
+			var right = new ExampleInvoiceItem ();
 
-			right.Left = left;
+			right.Invoice = left;
 
 			// Try to save the "right" object without first saving the "left" object. It should throw an exception because it can't sync with
 			// a non-existent entity
@@ -27,52 +28,52 @@ namespace datamanager.Data.Tests.Integration
 		}
 
 
-		[Test]
+		// TODO: Remove if not needed
+		//[Test]
 		public void Test_TwoWayReference_Add()
 		{
 			var data = new DataManager();
 
-			var left = new ExampleReferenceLeft ();
+			var invoice = new ExampleInvoice ();
 
-			data.Save(left);
+			data.Save(invoice);
 
-			var right = new ExampleReferenceRight ();
+			var invoiceItem = new ExampleInvoiceItem ();
 
-			right.AddLink("Left", left);
+			invoiceItem.AddLink("Invoice", invoice);
 
-			data.Save (right);
+			data.Save (invoiceItem);
 
 			// The "left.Right" property should now contain a link to the "right" object
-			Assert.IsNotNull (left.Right, "Linker failed to add the link to the other entity.");
+			Assert.IsNotNull (invoice.Items, "Linker failed to add the link to the other entity.");
 		}
 
-		[Test]
+		// TODO: Remove if not needed
+		//[Test]
 		public void Test_TwoWayReference_RemoveReverseLinkOnUpdate()
 		{
 			var data = new DataManager();
 
-			var left = new ExampleReferenceLeft ();
-			var right = new ExampleReferenceRight ();
+			var invoice = new ExampleInvoice ();
+			var invoiceItem = new ExampleInvoiceItem ();
 
-			// left.Right = new ExampleReferenceRight[]{right};// TODO: Remove if not needed
+			data.Save(invoice);
 
-			data.Save(left);
+			invoiceItem.Invoice = invoice;
 
-			right.Left = left;
+			data.Save (invoiceItem);
 
-			data.Save (right);
+			invoiceItem.Invoice = null;
 
-			right.Left = null;
+			data.Update(invoiceItem);
 
-			data.Update(right);
+			var newInvoice = data.Get<ExampleInvoice> (invoice.Id);
 
-			var newLeft = data.Get<ExampleReferenceLeft> (left.Id);
-
-			// The "left.Right" property should now be empty
-			Assert.IsEmpty (newLeft.Right, "Linker failed to remove the link.");
+			Assert.AreEqual(0, newInvoice.Items.Length, "Linker failed to remove the link.");
 		}
 
-		[Test]
+		// TODO: Remove if not needed
+		//[Test]
 		public void Test_TwoWayReference_RemoveOnDelete()
 		{
 
@@ -81,77 +82,81 @@ namespace datamanager.Data.Tests.Integration
 			Console.WriteLine ("");
 
 			var data = new DataManager();
+			data.IsVerbose = true;
 
-			var left = new ExampleReferenceLeft ();
-			var right = new ExampleReferenceRight ();
+			data.WriteSummary ();
 
-			data.Save(left);
+			var invoiceItem = new ExampleInvoiceItem ();
+			var invoice = new ExampleInvoice (invoiceItem);
 
-			right.Left = left;
+			data.Save(invoice, true);
 
-			data.Save (right);
+			data.WriteSummary ();
 
 			Console.WriteLine ("");
 			Console.WriteLine ("Executing test code...");
 			Console.WriteLine ("");
 
-			data.Delete(right);
+			data.Delete(invoice);
 
-			var newLeft = data.Get<ExampleReferenceLeft> (left.Id);
+			data.WriteSummary ();
 
-			// The "left.Right" property should now be empty
-			Assert.IsEmpty (newLeft.Right, "Linker failed to remove the link.");
+			var newInvoice = data.Get<ExampleInvoice> (invoice.Id);
+
+			Assert.AreEqual(0, newInvoice.Items.Length, "Linker failed to remove the link.");
 		}
 
-		[Test]
+		// TODO: Remove if not needed
+		//[Test]
 		public void Test_SaveLinkedEntities()
 		{
 			var data = new DataManager();
 
-			var left = new ExampleReferenceLeft ();
-			var right = new ExampleReferenceRight ();
+			var invoice = new ExampleInvoice ();
+			var invoiceItem = new ExampleInvoiceItem ();
 
-			left.Right = new ExampleReferenceRight[]{right};
+			invoice.Items = new ExampleInvoiceItem[]{invoiceItem};
 
 			//data.Save(left);
 
 			//right.Left = left;
 
-			data.SaveLinkedEntities (left);
+			data.SaveLinkedEntities (invoice);
 
 
-			var foundRight = data.Get<ExampleReferenceRight> (right.Id);
+			var foundRight = data.Get<ExampleInvoiceItem> (invoiceItem.Id);
 
 			// The "right" object should now be found in the data store
 			Assert.IsNotNull (foundRight, "Linker failed to save the other entity.");
 		}
 
 
-		[Test]
+		// TODO: Remove if not needed
+		//[Test]
 		public void Test_UpdateLinkedEntities()
 		{
 			var data = new DataManager();
 
-			var left = new ExampleReferenceLeft ();
-			var right = new ExampleReferenceRight ();
+			var left = new ExampleInvoice ();
+			var right = new ExampleInvoiceItem ();
 
 
 			data.Save(left);
 
 			//left.Right = new ExampleReferenceRight[]{right}; // TODO: Remove. This shouldn't be needed
 
-			right.Left = left;
+			right.Invoice = left;
 
 			data.Save (right);
 
-			right.NumberValue = 2;
+			right.Amount = 2;
 
 			data.UpdateLinkedEntities (left);
 
-			var foundRight = data.Get<ExampleReferenceRight> (right.Id);
+			var foundRight = data.Get<ExampleInvoiceItem> (right.Id);
 
 			// The "right" object should have been updated in the data store
-			Assert.AreEqual(2, foundRight.NumberValue, "Linker failed to update the other entity.");
+			Assert.AreEqual(2, foundRight.Amount, "Linker failed to update the other entity.");
 		}
 	}
 }

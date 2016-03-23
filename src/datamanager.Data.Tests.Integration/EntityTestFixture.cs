@@ -7,12 +7,14 @@ namespace datamanager.Data.Tests.Integration
 	[TestFixture]
 	public class EntityTestFixture : BaseDataTestFixture
 	{
-		[Test]
+		// TODO: Remove if not needed
+		//[Test]
 		public void Test_SaveReadAndList()
 		{
 			var entity = new ExampleEntity ("TestEntity", 10);
 
-			try
+			throw new NotImplementedException ();
+			/*try
 			{
 				var saver = new DataSaver ();
 				saver.Save (entity);
@@ -38,7 +40,7 @@ namespace datamanager.Data.Tests.Integration
 			{
 				var deleter = new DataDeleter ();
 				deleter.Delete (entity);
-			}
+			}*/
 		}
 	}
 }

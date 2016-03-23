@@ -5,7 +5,7 @@ namespace datamanager.Data
 {
 	public class DataPreparer : BaseDataAdapter
 	{
-		public DataPreparer (DataManager dataManager) : base (dataManager)
+		public DataPreparer (BaseRedisClientWrapper client) : base(client)
 		{
 		}
 

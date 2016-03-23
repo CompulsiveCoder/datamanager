@@ -58,6 +58,11 @@
     <Compile Include="EntityNotFoundException.cs" />
     <Compile Include="EntityAlreadyExistsException.cs" />
     <Compile Include="UnsavedLinksException.cs" />
+    <Compile Include="DataTypeManager.cs" />
+    <Compile Include="DataManagerSettings.cs" />
+    <Compile Include="RedisClientWrapper.cs" />
+    <Compile Include="BaseRedisClientWrapper.cs" />
+    <Compile Include="DataChecker.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

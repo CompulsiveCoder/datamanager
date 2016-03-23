@@ -6,12 +6,15 @@ namespace datamanager.Data
 {
 	public class DataDeleter : BaseDataAdapter
 	{
-		public DataDeleter ()
-		{
-		}
+		public DataIdManager IdManager;
+		public DataLinker Linker;
+		public DataKeys Keys;
 
-		public DataDeleter (DataManager dataManager) : base (dataManager)
+		public DataDeleter (DataIdManager idManager, DataKeys keys, DataLinker linker, BaseRedisClientWrapper client) : base (client)
 		{
+			IdManager = idManager;
+			Keys = keys;
+			Linker = linker;
 		}
 
 		public void Delete(BaseEntity entity)
@@ -21,11 +24,11 @@ namespace datamanager.Data
 			
 			//Console.WriteLine ("Deleting: " + entity.GetType ().Name);
 
-			Data.Linker.RemoveLinks (entity);
+			Linker.RemoveLinks (entity);
 
-			Data.Client.Del(Keys.GetKey(entity));
+			Client.Del(Keys.GetKey(entity));
 
-			Data.IdManager.Remove (entity);
+			IdManager.Remove (entity);
 		}
 	}
 }

@@ -9,25 +9,25 @@ namespace datamanager.Data
 {
 	public class DataLinker
 	{
-		public DataManager Data { get; set; }
+		public DataManagerSettings Settings;
+		public DataChecker Checker;
+		public DataReader Reader;
+		public DataSaver Saver;
+		public DataUpdater Updater;
+		public EntityLinker Linker;
 
-		public EntityLinker Linker { get; set; }
-
-		public DataLinker ()
+		public DataLinker (DataManagerSettings settings, DataReader reader, DataSaver saver, DataUpdater updater, DataChecker checker, EntityLinker linker)
 		{
-			Data = new DataManager ();
-			Linker = new EntityLinker ();
+			Settings = settings;
+			Linker = linker;
+			Reader = reader;
+			Saver = saver;
+			Checker = checker;
 		}
 
-		public DataLinker (DataManager dataManager)
+		public virtual void SaveLinkedEntities(BaseEntity entity)
 		{
-			Data = dataManager;
-			Linker = new EntityLinker ();
-		}
-
-		public void SaveLinkedEntities(BaseEntity entity)
-		{
-			if (Data.IsVerbose)
+			if (Settings.IsVerbose)
 				Console.WriteLine ("Saving all entities linked to '"  + entity.GetType().Name + "'.");
 			
 			foreach (var property in entity.GetType().GetProperties()) {
@@ -37,20 +37,21 @@ namespace datamanager.Data
 			}
 		}
 
-		public void SaveLinkedEntities(BaseEntity entity, PropertyInfo property)
+		public virtual void SaveLinkedEntities(BaseEntity entity, PropertyInfo property)
 		{
 			var linkedEntities = Linker.GetLinkedEntities (entity, property);
 
 			foreach (var e in linkedEntities) {
-				if (!Data.Exists(e))
-					Data.Save (e);
+				if (!Checker.Exists (e)) {
+					Saver.Save(entity, false, false); // Save without committing links otherwise it causes a loop
+				}
 			}
 		}
 
 
-		public void UpdateLinkedEntities(BaseEntity entity)
+		public virtual void UpdateLinkedEntities(BaseEntity entity)
 		{
-			if (Data.IsVerbose)
+			if (Settings.IsVerbose)
 				Console.WriteLine ("Updating all entities linked to '"  + entity.GetType().Name + "'.");
 			
 			foreach (var property in entity.GetType().GetProperties()) {
@@ -60,26 +61,26 @@ namespace datamanager.Data
 			}
 		}
 
-		public void UpdateLinkedEntities(BaseEntity entity, PropertyInfo property)
+		public virtual void UpdateLinkedEntities(BaseEntity entity, PropertyInfo property)
 		{
 			var linkedEntities = Linker.GetLinkedEntities (entity, property);
 
 			foreach (var e in linkedEntities) {
-				if (Data.Exists(e))
-					Data.Update (e);
+				if (Checker.Exists(e))
+					Updater.Update (e);
 			}
 		}
 
-		public void CommitLinks(BaseEntity entity)
+		public virtual void CommitLinks(BaseEntity entity)
 		{
-			var previousEntity = Data.Get (entity.GetType(), entity.Id);
+			var previousEntity = Reader.Read(entity.GetType(), entity.Id);
 
 			FindAndFixDifferences (previousEntity, entity);
 		}
 
-		public void RemoveLinks (BaseEntity entity)
+		public virtual void RemoveLinks (BaseEntity entity)
 		{
-			if (Data.IsVerbose)
+			if (Settings.IsVerbose)
 			{
 				Console.WriteLine ("Removing links between '" + entity.GetType().Name + "' and other entities");
 			}
@@ -97,7 +98,7 @@ namespace datamanager.Data
 			}
 		}
 
-		public void RemoveLinks(BaseEntity entity, PropertyInfo property, string otherPropertyName)
+		public virtual void RemoveLinks(BaseEntity entity, PropertyInfo property, string otherPropertyName)
 		{
 			if (!String.IsNullOrEmpty (otherPropertyName)) {
 				var linkedEntities = Linker.GetLinkedEntities (entity, property);
@@ -106,14 +107,15 @@ namespace datamanager.Data
 					if (linkedEntity != null) {
 						Linker.RemoveReturnLink (entity, property, linkedEntity, otherPropertyName);
 
+						throw new NotImplementedException ();
 						// Delay update until all references are fixed
-						Data.DelayUpdate (linkedEntity);
+						//Data.DelayUpdate (linkedEntity);
 					}
 				}
 			}
 		}
 
-		public void FindAndFixDifferences(BaseEntity previousEntity, BaseEntity updatedEntity)
+		public virtual void FindAndFixDifferences(BaseEntity previousEntity, BaseEntity updatedEntity)
 		{
 			foreach (var property in updatedEntity.GetType().GetProperties()) {
 				if (Linker.IsLinkProperty (updatedEntity, property)) {
@@ -122,7 +124,7 @@ namespace datamanager.Data
 			}
 		}
 
-		public void FindAndFixDifferences(BaseEntity previousEntity, BaseEntity updatedEntity, PropertyInfo property)
+		public virtual void FindAndFixDifferences(BaseEntity previousEntity, BaseEntity updatedEntity, PropertyInfo property)
 		{
 			var previousLinks = new BaseEntity[]{ };
 
@@ -140,7 +142,7 @@ namespace datamanager.Data
 			RemoveOldReverseLinks (updatedEntity, property, linksToRemove);
 		}
 
-		public BaseEntity[] IdentifyEntityLinksToAdd(BaseEntity[] previousLinkedEntities, BaseEntity[] updatedLinkedEntities)
+		public virtual BaseEntity[] IdentifyEntityLinksToAdd(BaseEntity[] previousLinkedEntities, BaseEntity[] updatedLinkedEntities)
 		{
 			var linksToAdd = (from entity in updatedLinkedEntities
 				where !Linker.EntityExists (previousLinkedEntities, entity)
@@ -149,7 +151,7 @@ namespace datamanager.Data
 			return linksToAdd;
 		}
 
-		public BaseEntity[] IdentifyEntityLinksToRemove(BaseEntity[] previousLinkedEntities, BaseEntity[] updatedLinkedEntities)
+		public virtual BaseEntity[] IdentifyEntityLinksToRemove(BaseEntity[] previousLinkedEntities, BaseEntity[] updatedLinkedEntities)
 		{
 			var linksToRemove = (from entity in previousLinkedEntities
 				where !Linker.EntityExists (updatedLinkedEntities, entity)
@@ -158,7 +160,7 @@ namespace datamanager.Data
 			return linksToRemove;
 		}
 
-		public void CommitNewReverseLinks(BaseEntity entity, PropertyInfo property, BaseEntity[] newLinkedEntities)
+		public virtual void CommitNewReverseLinks(BaseEntity entity, PropertyInfo property, BaseEntity[] newLinkedEntities)
 		{
 			var otherPropertyName = Linker.GetOtherPropertyName (property);
 
@@ -166,13 +168,14 @@ namespace datamanager.Data
 				foreach (var newLinkedEntity in newLinkedEntities) {
 					Linker.AddReturnLink (entity, property, newLinkedEntity, otherPropertyName);
 
-					if (!Data.PendingUpdate.Contains (newLinkedEntity))
-						Data.DelayUpdate (newLinkedEntity);
+					throw new NotImplementedException ();
+					//if (!Data.PendingUpdate.Contains (newLinkedEntity))
+					//	Data.DelayUpdate (newLinkedEntity);
 				}
 			}
 		}
 
-		public void RemoveOldReverseLinks(BaseEntity entity, PropertyInfo property, BaseEntity[] oldLinkedEntities)
+		public virtual void RemoveOldReverseLinks(BaseEntity entity, PropertyInfo property, BaseEntity[] oldLinkedEntities)
 		{
 			var otherPropertyName = Linker.GetOtherPropertyName (property);
 
@@ -180,8 +183,9 @@ namespace datamanager.Data
 				foreach (var oldLinkedEntity in oldLinkedEntities) {
 					Linker.RemoveReturnLink (entity, property, oldLinkedEntity, otherPropertyName);
 
-					if (!Data.PendingUpdate.Contains (oldLinkedEntity))
-						Data.DelayUpdate (oldLinkedEntity);
+					throw new NotImplementedException ();
+					//if (!Data.PendingUpdate.Contains (oldLinkedEntity))
+					//	Data.DelayUpdate (oldLinkedEntity);
 				}
 			}
 		}

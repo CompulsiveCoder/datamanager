@@ -37,8 +37,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BaseEntity.cs" />
     <Compile Include="ExampleEntity.cs" />
-    <Compile Include="Examples\TwoWayReference\ExampleReferenceLeft.cs" />
-    <Compile Include="Examples\TwoWayReference\ExampleReferenceRight.cs" />
     <Compile Include="TwoWayAttribute.cs" />
     <Compile Include="OneWayAttribute.cs" />
     <Compile Include="BaseLinkAttribute.cs" />
@@ -47,6 +45,8 @@
     <Compile Include="Examples\OneWayReference\ExampleReferenceSource.cs" />
     <Compile Include="Examples\OneWayReference\ExampleReferenceTarget.cs" />
     <Compile Include="Examples\SimpleEntity.cs" />
+    <Compile Include="Examples\TwoWayReference\ExampleInvoice.cs" />
+    <Compile Include="Examples\TwoWayReference\ExampleInvoiceItem.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

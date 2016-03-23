@@ -37,10 +37,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Unit\DataSaverTestFixture.cs" />
-    <Compile Include="Unit\DataUpdaterTestFixture.cs" />
-    <Compile Include="Unit\DataLinkerUnitTestFixture.cs" />
     <Compile Include="BaseDataTestFixture.cs" />
+    <Compile Include="MockRedisClientWrapper.cs" />
+    <Compile Include="MockDataLinker.cs" />
+    <Compile Include="DataSaverUnitTestFixture.cs" />
+    <Compile Include="DataLinkerUnitTestFixture.cs" />
+    <Compile Include="TestContext.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
