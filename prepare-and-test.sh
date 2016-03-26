@@ -9,4 +9,4 @@ echo "Tests: $TEST_CATEGORY"
 sh prepare.sh && \
 sh init.sh && \
 sh build.sh && \
-sh test.sh $TEST_CATEGORY
+sudo redis-server & sh test.sh $TEST_CATEGORY
