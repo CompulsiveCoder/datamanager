@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace datamanager.Entities.Tests
 {
-	[TestFixture]
+	[TestFixture(Category="Unit")]
 	public class EntityLinkerTestFixture
 	{
 		[Test]
@@ -36,7 +36,7 @@ namespace datamanager.Entities.Tests
 			Assert.IsNotNull (invoiceItem.Invoice, "Reverse link failed.");
 		}
 
-		[Test]
+		[TestFixture(Category="Unit")]
 		public void Test_RemoveEntityFromObject_Array()
 		{
 			var linker = new EntityLinker ();

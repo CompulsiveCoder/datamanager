@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace datamanager.Data.Tests
 {
-	public class BaseDataIntegrationTestFixture
+	public abstract class BaseDataIntegrationTestFixture
 	{
 		public DataManager Data;
 

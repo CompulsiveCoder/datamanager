@@ -4,7 +4,7 @@ using datamanager.Entities;
 
 namespace datamanager.Data.Tests.Unit
 {
-	[TestFixture]
+	[TestFixture(Category="Unit")]
 	public class DataLinkerUnitTestFixture : BaseDataTestFixture
 	{
 		/// <summary>

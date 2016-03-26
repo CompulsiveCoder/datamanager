@@ -7,7 +7,7 @@ namespace datamanager.Data.Tests.Integration
 	[TestFixture]
 	public class DataUpdaterTestFixture : BaseDataIntegrationTestFixture
 	{
-		[Test]
+		[TestFixture(Category="Integration")]
 		[ExpectedException(typeof(EntityNotFoundException))]
 		public void Test_Update_EntityNotFoundException()
 		{

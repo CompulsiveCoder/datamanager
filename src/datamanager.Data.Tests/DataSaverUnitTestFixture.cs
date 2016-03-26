@@ -2,9 +2,9 @@
 using NUnit.Framework;
 using datamanager.Entities;
 
-namespace datamanager.Data.Tests
+namespace datamanager.Data.Tests.Unit
 {
-	[TestFixture]
+	[TestFixture(Category="Unit")]
 	public class DataSaverUnitTestFixture : BaseDataTestFixture
 	{
 		[Test]

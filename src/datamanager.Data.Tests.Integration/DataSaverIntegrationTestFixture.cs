@@ -4,7 +4,7 @@ using datamanager.Entities;
 
 namespace datamanager.Data.Tests.Integration
 {
-	[TestFixture]
+	[TestFixture(Category="Integration")]
 	public class DataSaverIntegrationTestFixture : BaseDataIntegrationTestFixture
 	{
 		[Test]
@@ -21,8 +21,7 @@ namespace datamanager.Data.Tests.Integration
 			Data.Save (entity);
 		}
 
-		// TODO: Should this be moved to integration tests?
-		[Test]
+		[TestFixture(Category="Integration")]
 		[ExpectedException(typeof(EntityAlreadyExistsException))]
 		public void Test_Save_EntityAlreadyExistsException()
 		{
