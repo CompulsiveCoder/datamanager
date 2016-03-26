@@ -3,7 +3,8 @@ sudo: required
 language: c#
 
 services:
-- docker
+  - docker
+  - redis
 
 env:
   - TEST_SUITE=Unit
