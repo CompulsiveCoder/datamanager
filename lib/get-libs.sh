@@ -1,10 +1,8 @@
 echo "Getting library files"
-echo "  Current directory:"
-echo "  $PWD"
-
+echo "  Dir: $PWD"
 
 NUGET_FILE="nuget.exe"
- 
+
 if [ ! -f "$NUGET_FILE" ];
 then
     wget http://nuget.org/nuget.exe
