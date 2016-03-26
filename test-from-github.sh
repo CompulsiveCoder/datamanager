@@ -1,3 +1,7 @@
+echo "Testing datamanager project from github"
+echo "  Current directory:"
+echo "  $PWD"
+
 BRANCH=$1
 
 if [ -z "$BRANCH" ]; then
@@ -8,7 +12,7 @@ if [ -z "$BRANCH" ]; then
     BRANCH="master"
 fi
 
-echo "Branch: $BRANCH"
+echo "  Branch: $BRANCH"
 
 git clone https://github.com/CompulsiveCoder/datamanager.git --branch $BRANCH
 cd datamanager
