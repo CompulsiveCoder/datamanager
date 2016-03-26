@@ -40,6 +40,9 @@ namespace datamanager.Data
 
 		public BaseEntity Read(Type entityType, string entityId)
 		{
+			if (entityType == null)
+				throw new ArgumentNullException ("entityType");
+			
 			var key = Keys.GetKey (entityType.Name, entityId);
 
 			var json = Client.Get (key);

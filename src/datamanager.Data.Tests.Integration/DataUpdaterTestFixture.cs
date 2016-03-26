@@ -14,8 +14,10 @@ namespace datamanager.Data.Tests.Integration
 			// Create the entity
 			var entity = new SimpleEntity ();
 
+			var data = GetDataManager ();
+
 			// Call the Update function which should throw an exception because it hasn't been saved yet
-			Data.Updater.Update(entity);
+			data.Updater.Update(entity);
 		}
 	}
 }

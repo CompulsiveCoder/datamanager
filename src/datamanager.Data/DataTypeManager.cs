@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Sider;
+using System.Text;
 
 namespace datamanager.Data
 {
@@ -9,6 +10,10 @@ namespace datamanager.Data
 		public DataKeys Keys { get;set; }
 
 		public BaseRedisClientWrapper Client { get;set; }
+
+		public char DefinitionSeparator = '|';
+
+		public char PairSeparator = '-';
 
 		public DataTypeManager (DataKeys keys, BaseRedisClientWrapper client)
 		{
@@ -31,10 +36,10 @@ namespace datamanager.Data
 			var typeNames = new List<string>();
 
 			if (!String.IsNullOrEmpty (typesString)) {
-				var typeDefinitionStrings = typesString.Split (';');
+				var typeDefinitionStrings = typesString.Split (DefinitionSeparator);
 				foreach (var typeDefinitionString in typeDefinitionStrings) {
 					if (!String.IsNullOrEmpty (typeDefinitionString)) {
-						var parts = typeDefinitionString.Split ('=');
+						var parts = typeDefinitionString.Split (PairSeparator);
 						var typeName = parts [0];
 						typeNames.Add (typeName);
 					}
@@ -53,11 +58,11 @@ namespace datamanager.Data
 			var typeDefinitions = new Dictionary<string, string> ();
 
 			if (!String.IsNullOrEmpty (typesString)) {
-				var typeDefinitionStrings = typesString.Split (';');
+				var typeDefinitionStrings = typesString.Split (DefinitionSeparator);
 				foreach (var typeDefinitionString in typeDefinitionStrings) {
 					if (!String.IsNullOrEmpty (typeDefinitionString)
-						&& typeDefinitionString.Contains("=")) {
-						var parts = typeDefinitionString.Split ('=');
+						&& typeDefinitionString.Contains(PairSeparator.ToString())) {
+						var parts = typeDefinitionString.Split (PairSeparator);
 						var typeName = parts [0];
 						var typeFullName = parts [1];
 						typeDefinitions.Add (typeName, typeFullName);
@@ -66,6 +71,11 @@ namespace datamanager.Data
 			}
 
 			return typeDefinitions;
+		}
+
+		public void Add(Type type)
+		{
+			Add (type.Name, type.AssemblyQualifiedName);
 		}
 
 		public void Add(string typeName, string typeFullName)
@@ -78,10 +88,19 @@ namespace datamanager.Data
 			SetTypes (types);
 		}
 
-		public void SetTypes(Dictionary<string, string> typeNames)
+		public void SetTypes(Dictionary<string, string> typeDefinitions)
 		{
 			var typesKey = Keys.GetTypesKey ();
-			var typesString = String.Join (",", typeNames);
+
+			var builder = new StringBuilder ();
+
+			foreach (var typeName in typeDefinitions.Keys)
+			{
+				builder.Append (typeName + PairSeparator + typeDefinitions [typeName] + DefinitionSeparator);
+			}
+
+			var typesString = builder.ToString ().TrimEnd (DefinitionSeparator);
+
 			Client.Set(typesKey, typesString);
 		}
 
@@ -94,7 +113,7 @@ namespace datamanager.Data
 
 		public void EnsureExists(Type type)
 		{
-			EnsureExists (type.Name, type.FullName);
+			EnsureExists (type.Name, type.AssemblyQualifiedName);
 		}
 
 		public void EnsureExists(string typeName, string typeFullName)

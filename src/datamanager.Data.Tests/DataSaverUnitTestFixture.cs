@@ -15,24 +15,26 @@ namespace datamanager.Data.Tests.Unit
 			// Create the entity
 			var entity = new SimpleEntity ();
 
+			var context = GetTestContext ();
+
 			var mockLinker = new MockDataLinker (
-				Context.Settings,
-				Context.Reader,
-				Context.Saver,
-				Context.Updater,
-				Context.Checker,
-				Context.EntityLinker
+				context.Settings,
+				context.Reader,
+				context.Saver,
+				context.Updater,
+				context.Checker,
+				context.EntityLinker
 			);
 
 			var saver = new DataSaver (
-				Context.Settings,
-				Context.TypeManager,
-				Context.IdManager,
-				Context.Keys,
-				Context.Preparer,
+				context.Settings,
+				context.TypeManager,
+				context.IdManager,
+				context.Keys,
+				context.Preparer,
 				mockLinker,
-				Context.Checker,
-				Context.DataClient);
+				context.Checker,
+				context.DataClient);
 
 			Console.WriteLine ("Executing test");
 
@@ -48,24 +50,26 @@ namespace datamanager.Data.Tests.Unit
 			// Create the entity
 			var entity = new SimpleEntity ();
 
+			var context = GetTestContext ();
+
 			var mockLinker = new MockDataLinker (
-				Context.Settings,
-				Context.Reader,
-				Context.Saver,
-				Context.Updater,
-				Context.Checker,
-				Context.EntityLinker
+				context.Settings,
+				context.Reader,
+				context.Saver,
+				context.Updater,
+				context.Checker,
+				context.EntityLinker
 			);
 
 			var saver = new DataSaver (
-				Context.Settings,
-				Context.TypeManager,
-				Context.IdManager,
-				Context.Keys,
-				Context.Preparer,
+				context.Settings,
+				context.TypeManager,
+				context.IdManager,
+				context.Keys,
+				context.Preparer,
 				mockLinker,
-				Context.Checker,
-				Context.DataClient);
+				context.Checker,
+				context.DataClient);
 
 			// Save the entity
 			saver.Save (entity);

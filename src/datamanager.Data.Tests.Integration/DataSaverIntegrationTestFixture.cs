@@ -17,8 +17,10 @@ namespace datamanager.Data.Tests.Integration
 
 			Console.WriteLine ("Executing test");
 
+			var data = GetDataManager ();
+
 			// Save the entity
-			Data.Save (entity);
+			data.Save (entity);
 		}
 
 		[Test]
@@ -28,11 +30,13 @@ namespace datamanager.Data.Tests.Integration
 			// Create the entity
 			var entity = new SimpleEntity ();
 
+			var data = GetDataManager ();
+
 			// Save the entity
-			Data.Save (entity);
+			data.Save (entity);
 
 			// Call the Save function again which should throw an exception
-			Data.Save(entity);
+			data.Save(entity);
 		}
 	}
 }

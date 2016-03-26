@@ -5,7 +5,8 @@ namespace datamanager.Data.Tests
 {
 	public abstract class BaseDataIntegrationTestFixture
 	{
-		public DataManager Data;
+		// TODO: Remove if not needed
+		private DataManager data;
 
 		public bool ResetDataOnTearDown = true;
 
@@ -17,15 +18,23 @@ namespace datamanager.Data.Tests
 		public void Initialize()
 		{
 			Console.WriteLine ("Setting up test fixture " + this.GetType ().FullName);
-
-			Data = new DataManager ("Test-" + Guid.NewGuid ().ToString());
 		}
 
 		[TearDown]
 		public void Dispose()
 		{
-			if (ResetDataOnTearDown)
-				Data.Client.FlushAll ();
+			if (data != null && ResetDataOnTearDown)
+				data.Client.FlushAll ();
+		}
+
+		public DataManager GetDataManager()
+		{
+			data = new DataManager (new MockRedisClientWrapper ());
+
+			data.Settings.Prefix = "Test-" + Guid.NewGuid ().ToString ().Substring (0, 8);
+			data.Settings.IsVerbose = true;
+
+			return data;
 		}
 	}
 }
