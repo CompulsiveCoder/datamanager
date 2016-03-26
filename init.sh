@@ -1,6 +1,5 @@
 echo "Initializing datamanager project"
-echo "  Current directory:"
-echo "  $PWD"
+echo "  Dir: $PWD"
 
 
 DIR=$PWD
