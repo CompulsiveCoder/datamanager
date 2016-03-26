@@ -36,7 +36,7 @@ namespace datamanager.Entities.Tests
 			Assert.IsNotNull (invoiceItem.Invoice, "Reverse link failed.");
 		}
 
-		[TestFixture(Category="Unit")]
+		[Test]
 		public void Test_RemoveEntityFromObject_Array()
 		{
 			var linker = new EntityLinker ();

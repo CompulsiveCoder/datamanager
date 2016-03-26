@@ -4,10 +4,10 @@ using datamanager.Entities;
 
 namespace datamanager.Data.Tests.Integration
 {
-	[TestFixture]
+	[TestFixture(Category="Integration")]
 	public class DataUpdaterTestFixture : BaseDataIntegrationTestFixture
 	{
-		[TestFixture(Category="Integration")]
+		[Test]
 		[ExpectedException(typeof(EntityNotFoundException))]
 		public void Test_Update_EntityNotFoundException()
 		{

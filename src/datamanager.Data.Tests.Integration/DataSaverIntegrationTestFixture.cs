@@ -21,7 +21,7 @@ namespace datamanager.Data.Tests.Integration
 			Data.Save (entity);
 		}
 
-		[TestFixture(Category="Integration")]
+		[Test]
 		[ExpectedException(typeof(EntityAlreadyExistsException))]
 		public void Test_Save_EntityAlreadyExistsException()
 		{
