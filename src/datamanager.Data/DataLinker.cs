@@ -22,6 +22,7 @@ namespace datamanager.Data
 			Linker = linker;
 			Reader = reader;
 			Saver = saver;
+			Updater = updater;
 			Checker = checker;
 		}
 
@@ -39,11 +40,14 @@ namespace datamanager.Data
 
 		public virtual void SaveLinkedEntities(BaseEntity entity, PropertyInfo property)
 		{
+			if (Settings.IsVerbose)
+				Console.WriteLine ("Saving all entities linked to '"  + entity.GetType().Name + "' on '" + property.Name + "' property.");
+			
 			var linkedEntities = Linker.GetLinkedEntities (entity, property);
 
 			foreach (var e in linkedEntities) {
 				if (!Checker.Exists (e)) {
-					Saver.Save(entity, false, false); // Save without committing links otherwise it causes a loop
+					Saver.Save(e, false); // Save without committing links otherwise it causes a loop
 				}
 			}
 		}
@@ -63,6 +67,9 @@ namespace datamanager.Data
 
 		public virtual void UpdateLinkedEntities(BaseEntity entity, PropertyInfo property)
 		{
+			if (Settings.IsVerbose)
+				Console.WriteLine ("Updating all entities linked to '"  + entity.GetType().Name + "' on '" + property.Name + "' property.");
+			
 			var linkedEntities = Linker.GetLinkedEntities (entity, property);
 
 			foreach (var e in linkedEntities) {
@@ -73,6 +80,9 @@ namespace datamanager.Data
 
 		public virtual void CommitLinks(BaseEntity entity)
 		{
+			if (Settings.IsVerbose)
+				Console.WriteLine ("  Committing all links for '"  + entity.GetType().Name + "'.");
+			
 			var previousEntity = Reader.Read(entity.GetType(), entity.Id);
 
 			FindAndFixDifferences (previousEntity, entity);
@@ -82,7 +92,7 @@ namespace datamanager.Data
 		{
 			if (Settings.IsVerbose)
 			{
-				Console.WriteLine ("Removing links between '" + entity.GetType().Name + "' and other entities");
+				Console.WriteLine ("  Removing links between '" + entity.GetType().Name + "' and other entities");
 			}
 
 			foreach (var property in entity.GetType().GetProperties()) {
@@ -100,6 +110,9 @@ namespace datamanager.Data
 
 		public virtual void RemoveLinks(BaseEntity entity, PropertyInfo property, string otherPropertyName)
 		{
+			if (Settings.IsVerbose)
+				Console.WriteLine ("    Removing all links for '"  + entity.GetType().Name + "' on '" + property.Name + "' property.");
+			
 			if (!String.IsNullOrEmpty (otherPropertyName)) {
 				var linkedEntities = Linker.GetLinkedEntities (entity, property);
 
@@ -107,9 +120,8 @@ namespace datamanager.Data
 					if (linkedEntity != null) {
 						Linker.RemoveReturnLink (entity, property, linkedEntity, otherPropertyName);
 
-						throw new NotImplementedException ();
 						// Delay update until all references are fixed
-						//Data.DelayUpdate (linkedEntity);
+						Updater.DelayUpdate (linkedEntity);
 					}
 				}
 			}
@@ -117,6 +129,9 @@ namespace datamanager.Data
 
 		public virtual void FindAndFixDifferences(BaseEntity previousEntity, BaseEntity updatedEntity)
 		{
+			if (Settings.IsVerbose)
+				Console.WriteLine ("    Finding and fixing all differences between previous and updated '" + updatedEntity.GetType().Name + "' entity.");
+			
 			foreach (var property in updatedEntity.GetType().GetProperties()) {
 				if (Linker.IsLinkProperty (updatedEntity, property)) {
 					FindAndFixDifferences (previousEntity, updatedEntity, property);
@@ -126,6 +141,9 @@ namespace datamanager.Data
 
 		public virtual void FindAndFixDifferences(BaseEntity previousEntity, BaseEntity updatedEntity, PropertyInfo property)
 		{
+			if (Settings.IsVerbose)
+				Console.WriteLine ("      Finding and fixing all differences between previous and updated '" + updatedEntity.GetType().Name + "' entity on '" + property.Name + "' property.");
+			
 			var previousLinks = new BaseEntity[]{ };
 
 			if (previousEntity != null)
@@ -136,6 +154,11 @@ namespace datamanager.Data
 			var linksToAdd = IdentifyEntityLinksToAdd (previousLinks, updatedLinks);
 
 			var linksToRemove = IdentifyEntityLinksToRemove (previousLinks, updatedLinks);
+
+			if (Settings.IsVerbose) {
+				Console.WriteLine ("      Links to add: " + linksToAdd.Length);
+				Console.WriteLine ("      Links to remove: " + linksToRemove.Length);
+			}
 
 			CommitNewReverseLinks (updatedEntity, property, linksToAdd);
 
@@ -162,30 +185,36 @@ namespace datamanager.Data
 
 		public virtual void CommitNewReverseLinks(BaseEntity entity, PropertyInfo property, BaseEntity[] newLinkedEntities)
 		{
+			if (Settings.IsVerbose)
+				Console.WriteLine ("    Committing new reverse links for '" + entity.GetType ().Name + "' entity on '" + property.Name + "'.");
+
 			var otherPropertyName = Linker.GetOtherPropertyName (property);
 
 			if (!String.IsNullOrEmpty (otherPropertyName)) {
 				foreach (var newLinkedEntity in newLinkedEntities) {
-					Linker.AddReturnLink (entity, property, newLinkedEntity, otherPropertyName);
+					if (!Saver.PendingSave.Contains (newLinkedEntity)
+						&& !Updater.PendingUpdate.Contains(newLinkedEntity)) {
+						Linker.AddReturnLink (entity, property, newLinkedEntity, otherPropertyName);
 
-					throw new NotImplementedException ();
-					//if (!Data.PendingUpdate.Contains (newLinkedEntity))
-					//	Data.DelayUpdate (newLinkedEntity);
+						Updater.DelayUpdate (newLinkedEntity);
+					}
 				}
 			}
 		}
 
 		public virtual void RemoveOldReverseLinks(BaseEntity entity, PropertyInfo property, BaseEntity[] oldLinkedEntities)
 		{
+			if (Settings.IsVerbose)
+				Console.WriteLine ("    Removing obsolete reverse links for '" + entity.GetType ().Name + "' entity on '" + property.Name + "'.");
+			
 			var otherPropertyName = Linker.GetOtherPropertyName (property);
 
 			if (!String.IsNullOrEmpty (otherPropertyName)) {
 				foreach (var oldLinkedEntity in oldLinkedEntities) {
 					Linker.RemoveReturnLink (entity, property, oldLinkedEntity, otherPropertyName);
 
-					throw new NotImplementedException ();
-					//if (!Data.PendingUpdate.Contains (oldLinkedEntity))
-					//	Data.DelayUpdate (oldLinkedEntity);
+					if (!Updater.PendingUpdate.Contains (oldLinkedEntity))
+						Updater.DelayUpdate (oldLinkedEntity);
 				}
 			}
 		}

@@ -27,8 +27,6 @@ namespace datamanager.Data
 
 		public BaseRedisClientWrapper Client;
 
-		public List<BaseEntity> PendingSave = new List<BaseEntity>();
-		public List<BaseEntity> PendingUpdate = new List<BaseEntity>();
 		public List<BaseEntity> PendingDelete = new List<BaseEntity>();
 
 		public DataManagerSettings Settings = new DataManagerSettings();
@@ -40,31 +38,56 @@ namespace datamanager.Data
 			Construct ();
 		}
 
-		public DataManager (string prefix)
+		public DataManager(BaseRedisClientWrapper client)
 		{
-			Settings.Prefix = prefix;
-			Construct ();
-		}
-
-		public DataManager (DataManagerSettings settings)
-		{
-			Settings = settings;
-			Construct ();
+			Construct (client);
 		}
 
 		public void Construct()
 		{
-			Keys = new DataKeys (Settings);
+			Construct (new RedisClientWrapper ());
+		}
 
-			Open ();
+		public void Construct(BaseRedisClientWrapper client)
+		{
+			Client = client;
+
+			Keys = new DataKeys (Settings);
 
 			TypeManager = new DataTypeManager (Keys, Client);
 			IdManager = new DataIdManager (Keys, Client);
-			//Preparer = new DataPreparer (this);
 
 			EntityLinker = new EntityLinker ();
 
-			Preparer = new DataPreparer (Client);
+
+			var preparer = new DataPreparer (Client);
+			Preparer = preparer;
+
+			var reader = new DataReader (TypeManager, IdManager, Keys, Client);
+			Reader = reader;
+
+			var lister = new DataLister (TypeManager, IdManager, Reader, Client);
+			Lister = lister;
+
+			var checker = new DataChecker (reader, Settings);
+			Checker = checker;
+
+			var saver = new DataSaver (Settings, TypeManager, IdManager, Keys, preparer, null, checker, Client); // The linker argument is null because it needs to be set after it's created below
+			Saver = saver;
+
+			var updater = new DataUpdater (Settings, Keys, null, preparer, checker, Client); // The linker argument is null because it needs to be set after it's created below
+			Updater = updater;
+
+			var linker = new DataLinker (Settings, reader, saver, updater, checker, EntityLinker);
+			Linker = linker;
+
+			// TODO: Is there a way to avoid this messy hack?
+			// Make sure the linker is set to the saver and updater
+			saver.Linker = linker;
+			updater.Linker = linker;
+
+			// TODO: Remove if not needed
+			/*Preparer = new DataPreparer (Client);
 			Reader = new DataReader (TypeManager, IdManager, Keys, Client);
 			Checker = new DataChecker (Reader, Settings);
 			Linker = new DataLinker (Settings, Reader, Saver, Updater, Checker, EntityLinker);
@@ -72,12 +95,11 @@ namespace datamanager.Data
 		
 			Deleter = new DataDeleter (IdManager, Keys, Linker, Client);
 			Updater = new DataUpdater (Settings, Keys, Linker, Preparer, Checker, Client);
-			Lister = new DataLister (TypeManager, IdManager, Reader, Client);
+			Lister = new DataLister (TypeManager, IdManager, Reader, Client);*/
 		}
 
 		public void Open()
 		{
-			Client = new RedisClientWrapper ();
 		}
 
 		public void SaveOrUpdate(BaseEntity entity)
@@ -111,6 +133,7 @@ namespace datamanager.Data
 			CommitPending ();
 		}
 
+		// TODO: Remove if not needed
 		/*public void Save(BaseEntity entity, bool saveLinkedEntities)
 		{
 			Save (entity);
@@ -135,6 +158,7 @@ namespace datamanager.Data
 			CommitPending ();
 		}
 
+		// TODO: Remove if not needed
 		/*public void Update(BaseEntity entity, bool saveLinkedEntities)
 		{
 			Save (entity);
@@ -143,19 +167,6 @@ namespace datamanager.Data
 			if (saveLinkedEntities)
 				SaveLinkedEntities (entity);
 		}*/
-
-		public void DelayUpdate(BaseEntity entity)
-		{
-			if (!PendingUpdate.Contains(entity))
-				PendingUpdate.Add (entity);
-		}
-
-		public void DelaySave(BaseEntity entity)
-		{
-			if (!PendingSave.Contains(entity))
-				PendingSave.Add (entity);
-		}
-
 		public void Delete(BaseEntity entity)
 		{
 			Deleter.Delete (entity);
@@ -175,45 +186,14 @@ namespace datamanager.Data
 				Console.WriteLine ("Committing pending entities");
 			
 			// TODO: Remove if not needed
-			//CommitPendingSaves ();
+			Saver.CommitPendingSaves ();
 
-			CommitPendingUpdates ();
+			Updater.CommitPendingUpdates ();
 
+			// TODO: Move to deleter object
 			CommitPendingDeletes ();
 		}
 
-		// TODO: Remove if not needed
-		public void CommitPendingSaves()
-		{
-			while (PendingSave.Count > 0)
-			{
-				var entity = PendingSave [0];
-				if (!Exists (entity)) {
-					Saver.Save (entity);
-					PendingSave.RemoveAt (0);
-				}
-			}
-		}
-
-		public void CommitPendingUpdates()
-		{
-			while (PendingUpdate.Count > 0)
-			{
-				try
-				{
-					var entity = PendingUpdate[0];
-					if (Exists(entity))
-					{
-						Updater.Update (entity);
-						PendingUpdate.RemoveAt (0);
-					}
-				}
-				catch (EntityNotFoundException ex) {
-					// TODO: Check if this exception should be thrown
-					throw new UnsavedLinksException (ex.Entity);
-				}
-			}
-		}
 
 		// TODO: Should delayed deletion be removed? It's not currently being used by the data linker.
 		public void CommitPendingDeletes()

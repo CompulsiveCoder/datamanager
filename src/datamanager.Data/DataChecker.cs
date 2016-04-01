@@ -20,7 +20,9 @@ namespace datamanager.Data
 			if (Settings.IsVerbose)
 				Console.WriteLine ("Checking if entity exists: " + entity.GetType().Name);
 
-			var foundEntity = Reader.Read(entity.GetType(), entity.Id);
+			var entityType = entity.GetType ();
+
+			var foundEntity = Reader.Read(entityType, entity.Id);
 
 			var exists = foundEntity != null;
 

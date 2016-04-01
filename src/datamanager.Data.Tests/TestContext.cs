@@ -39,12 +39,28 @@ namespace datamanager.Data.Tests
 
 			EntityLinker = new EntityLinker ();
 
-			Preparer = new DataPreparer (DataClient);
-			Saver = new DataSaver (Settings, TypeManager, IdManager, Keys, Preparer, Linker, Checker, DataClient);
-			Updater = new DataUpdater (Settings, Keys, Linker, Preparer, Checker, DataClient);
-			Reader = new DataReader (TypeManager, IdManager, Keys, DataClient);
-			Linker = new DataLinker (Settings, Reader, Saver, Updater, Checker, EntityLinker);
-			Checker = new DataChecker (Reader, Settings);
+			var preparer = new DataPreparer (DataClient);
+			Preparer = preparer;
+
+			var reader = new DataReader (TypeManager, IdManager, Keys, DataClient);
+			Reader = reader;
+
+			var checker = new DataChecker (reader, Settings);
+			Checker = checker;
+
+			var saver = new DataSaver (Settings, TypeManager, IdManager, Keys, preparer, null, checker, DataClient); // The linker argument is null because it needs to be set after it's created below
+			Saver = saver;
+
+			var updater = new DataUpdater (Settings, Keys, null, preparer, checker, DataClient); // The linker argument is null because it needs to be set after it's created below
+			Updater = updater;
+
+			var linker = new DataLinker (Settings, reader, saver, updater, checker, EntityLinker);
+			Linker = linker;
+
+			// TODO: Is there a way to avoid this messy hack?
+			// Make sure the linker is set to the saver and updater
+			saver.Linker = linker;
+			updater.Linker = linker;
 		}
 	}
 }

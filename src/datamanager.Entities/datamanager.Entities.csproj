@@ -45,13 +45,17 @@
     <Compile Include="Examples\OneWayReference\ExampleReferenceSource.cs" />
     <Compile Include="Examples\OneWayReference\ExampleReferenceTarget.cs" />
     <Compile Include="Examples\SimpleEntity.cs" />
-    <Compile Include="Examples\TwoWayReference\ExampleInvoice.cs" />
-    <Compile Include="Examples\TwoWayReference\ExampleInvoiceItem.cs" />
+    <Compile Include="Examples\OneToManyReference\ExampleInvoice.cs" />
+    <Compile Include="Examples\OneToManyReference\ExampleInvoiceItem.cs" />
+    <Compile Include="Examples\OneToOneReference\ExampleUser.cs" />
+    <Compile Include="Examples\OneToManyReference\ExampleAuthor.cs" />
+    <Compile Include="Examples\OneToManyReference\ExampleArticle.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Examples\" />
-    <Folder Include="Examples\TwoWayReference\" />
     <Folder Include="Examples\OneWayReference\" />
+    <Folder Include="Examples\OneToManyReference\" />
+    <Folder Include="Examples\OneToOneReference\" />
   </ItemGroup>
 </Project>
