@@ -160,9 +160,11 @@ namespace datamanager.Data
 				Console.WriteLine ("      Links to remove: " + linksToRemove.Length);
 			}
 
-			CommitNewReverseLinks (updatedEntity, property, linksToAdd);
+			if (linksToAdd.Length > 0)
+				CommitNewReverseLinks (updatedEntity, property, linksToAdd);
 
-			RemoveOldReverseLinks (updatedEntity, property, linksToRemove);
+			if (linksToRemove.Length > 0)
+				RemoveOldReverseLinks (updatedEntity, property, linksToRemove);
 		}
 
 		public virtual BaseEntity[] IdentifyEntityLinksToAdd(BaseEntity[] previousLinkedEntities, BaseEntity[] updatedLinkedEntities)
