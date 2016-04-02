@@ -1,16 +1,14 @@
 echo "Getting library files"
-echo "  Current directory:"
-echo "  $PWD"
-
+echo "  Dir: $PWD"
 
 NUGET_FILE="nuget.exe"
- 
+
 if [ ! -f "$NUGET_FILE" ];
 then
     wget http://nuget.org/nuget.exe
 fi
 
-mono nuget.exe install sider
 mono nuget.exe install newtonsoft.json -version 8.0.3
 mono nuget.exe install nunit -version 2.6.4
 mono nuget.exe install nunit.runners -version 2.6.4
+mono nuget.exe install sider -version 0.10.0
