@@ -10,7 +10,7 @@ echo "Parent libs directory: $PARENT_LIB_DIR"
 
 if [ -f $PARENT_LIB_DIR/nuget.exe ]; then
    cd $PARENT_LIB_DIR
-   echo "Copying libs from parent projects"
+   echo "Copying libs from parent project"
    echo "  Dir: $PWD"
    cp -v nuget.exe $LIB_DIR/
    for d in */ ; do
