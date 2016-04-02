@@ -9,7 +9,7 @@ echo "Parent libs directory: $PARENT_LIB_DIR"
 if [ -f $PARENT_LIB_DIR/nuget.exe ]; then
    echo "Copying libs from parent projects"
    cp $PARENT_LIB_DIR/nuget.exe . -v
-   cp $PARENT_LIB_DIR/**/* . -v
+   cp $PARENT_LIB_DIR/**/* . -rv
 fi
 
 NUGET_FILE="nuget.exe"
