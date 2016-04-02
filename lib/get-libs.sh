@@ -1,6 +1,14 @@
 echo "Getting library files"
 echo "  Dir: $PWD"
 
+PARENT_DIR=../../..
+PARENT_LIB_DIR=$PARENT_DIR/lib
+
+if [ -f $PARENT_LIB_DIR/nuget.exe ]; then
+   echo "Copying libs from parent projects"
+   cp $PARENT_LIB_DIR/* . -v
+fi
+
 NUGET_FILE="nuget.exe"
 
 if [ ! -f "$NUGET_FILE" ];
