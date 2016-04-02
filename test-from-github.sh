@@ -14,6 +14,15 @@ fi
 
 echo "  Branch: $BRANCH"
 
-git clone https://github.com/CompulsiveCoder/datamanager.git --branch $BRANCH
-cd datamanager
-sh init-build-test.sh
+DIR=$PWD
+
+# If the .tmp/datamanager directory exists then remove it
+if [ -d ".tmp/datamanager" ]; then
+    rm .tmp/datamanager -rf
+fi
+
+git clone https://github.com/CompulsiveCoder/datamanager.git .tmp/datamanager --branch $BRANCH
+cd .tmp/datamanager && \
+sh init-build-test.sh && \
+cd $DIR && \
+rm .tmp/datamanager -rf

@@ -12,6 +12,15 @@ namespace datamanager.Data
 
 		public abstract void Quit();
 
+        public virtual void Append (string key, string value)
+        {
+            var existingValue = Get (key);
+
+            var newValue = existingValue += value;
+
+            Set (key, newValue);
+        }
+
 		public abstract void FlushAll();
 	}
 }

@@ -1,7 +1,6 @@
 echo "Initializing datamanager project"
 echo "  Dir: $PWD"
 
-
 DIR=$PWD
 
 cd lib

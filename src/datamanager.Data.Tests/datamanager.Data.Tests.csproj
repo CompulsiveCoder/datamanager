@@ -45,6 +45,7 @@
     <Compile Include="DataTypeManagerUnitTestFixture.cs" />
     <Compile Include="DataCheckerUnitTestFixture.cs" />
     <Compile Include="TestContext.cs" />
+    <Compile Include="MockDataManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

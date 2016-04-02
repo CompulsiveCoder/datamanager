@@ -63,23 +63,26 @@ namespace datamanager.Data
 			var preparer = new DataPreparer (Client);
 			Preparer = preparer;
 
-			var reader = new DataReader (TypeManager, IdManager, Keys, Client);
+			var reader = new DataReader (TypeManager, IdManager, Keys, client);
 			Reader = reader;
 
-			var lister = new DataLister (TypeManager, IdManager, Reader, Client);
+			var lister = new DataLister (TypeManager, IdManager, reader, client);
 			Lister = lister;
 
 			var checker = new DataChecker (reader, Settings);
 			Checker = checker;
 
-			var saver = new DataSaver (Settings, TypeManager, IdManager, Keys, preparer, null, checker, Client); // The linker argument is null because it needs to be set after it's created below
+			var saver = new DataSaver (Settings, TypeManager, IdManager, Keys, preparer, null, checker, client); // The linker argument is null because it needs to be set after it's created below
 			Saver = saver;
 
-			var updater = new DataUpdater (Settings, Keys, null, preparer, checker, Client); // The linker argument is null because it needs to be set after it's created below
+			var updater = new DataUpdater (Settings, Keys, null, preparer, checker, client); // The linker argument is null because it needs to be set after it's created below
 			Updater = updater;
 
 			var linker = new DataLinker (Settings, reader, saver, updater, checker, EntityLinker);
 			Linker = linker;
+
+			var deleter = new DataDeleter (IdManager, Keys, linker, client);
+			Deleter = deleter;
 
 			// TODO: Is there a way to avoid this messy hack?
 			// Make sure the linker is set to the saver and updater
