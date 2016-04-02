@@ -43,6 +43,7 @@
     <Compile Include="BaseDataIntegrationTestFixture.cs" />
     <Compile Include="DataUpdaterTestFixture.cs" />
     <Compile Include="DataSaverIntegrationTestFixture.cs" />
+    <Compile Include="DataDeleterIntegrationTestFixture.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
