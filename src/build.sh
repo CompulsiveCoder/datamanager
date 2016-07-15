@@ -1,1 +1,0 @@
-xbuild /property:Configuration=Release

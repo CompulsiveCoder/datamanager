@@ -4,7 +4,7 @@ using datamanager.Entities;
 
 namespace datamanager.Data.Tests
 {
-	[TestFixture]
+    [TestFixture(Category="Unit")]
 	public class DataTypeManagerUnitTestFixture : BaseDataTestFixture
 	{
 		[Test]
