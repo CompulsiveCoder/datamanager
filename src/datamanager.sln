@@ -11,12 +11,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "datamanager.Entities.Tests"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "datamanager.Data.Tests.Integration", "datamanager.Data.Tests.Integration\datamanager.Data.Tests.Integration.csproj", "{E30CF0B8-E352-4250-906E-D8FB37AAD404}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "datamanager.Data.Tests.ProfilingConsole", "datamanager.Data.Tests.ProfilingConsole\datamanager.Data.Tests.ProfilingConsole.csproj", "{0BCCD89E-D06E-411B-AD71-727F9082A7D8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0BCCD89E-D06E-411B-AD71-727F9082A7D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BCCD89E-D06E-411B-AD71-727F9082A7D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BCCD89E-D06E-411B-AD71-727F9082A7D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BCCD89E-D06E-411B-AD71-727F9082A7D8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{440222A1-E669-451C-AF43-D6BF7FFAADF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{440222A1-E669-451C-AF43-D6BF7FFAADF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{440222A1-E669-451C-AF43-D6BF7FFAADF0}.Release|Any CPU.ActiveCfg = Release|Any CPU

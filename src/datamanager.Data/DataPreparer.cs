@@ -11,16 +11,9 @@ namespace datamanager.Data
 
 		public BaseEntity PrepareForStorage(BaseEntity entity)
 		{
-			var validatedEntity = entity.Clone ();
+            // TODO: Implement clean up of entity if needed
 
-			// TODO: Clean up
-//			throw new NotImplementedException ();
-			// Remove the link log. It's serializable so that it can be transferred via serialization but it needs to be cleared before
-			// it is stored in a database.
-			// This isn't needed if the Log property is marked to be ignored during serialization but it's still worth leaving here to make sure.
-			//validatedEntity.Log = null;
-
-			return validatedEntity;
+			return entity;
 		}
 	}
 }

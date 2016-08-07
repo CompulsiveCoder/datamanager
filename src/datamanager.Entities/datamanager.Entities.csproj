@@ -47,7 +47,6 @@
     <Compile Include="Examples\SimpleEntity.cs" />
     <Compile Include="Examples\OneToManyReference\ExampleInvoice.cs" />
     <Compile Include="Examples\OneToManyReference\ExampleInvoiceItem.cs" />
-    <Compile Include="Examples\OneToOneReference\ExampleUser.cs" />
     <Compile Include="Examples\OneToManyReference\ExampleAuthor.cs" />
     <Compile Include="Examples\OneToManyReference\ExampleArticle.cs" />
   </ItemGroup>
@@ -56,6 +55,5 @@
     <Folder Include="Examples\" />
     <Folder Include="Examples\OneWayReference\" />
     <Folder Include="Examples\OneToManyReference\" />
-    <Folder Include="Examples\OneToOneReference\" />
   </ItemGroup>
 </Project>

@@ -2,6 +2,7 @@
 
 namespace datamanager.Entities
 {
+    [Serializable]
 	public class ExampleEntity : BaseEntity
 	{
 		public string Text { get; set; }
