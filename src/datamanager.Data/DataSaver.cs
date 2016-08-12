@@ -44,17 +44,7 @@ namespace datamanager.Data
 				if (Settings.IsVerbose)
 					Console.WriteLine ("Saving: " + entityType.Name);
 
-				// TODO: Remove if not needed
-				//throw new NotImplementedException ();
-
-				// TODO: Remove if not needed
-				// Add to the "pending save" list so the linker knows not to throw an error when it's not already found
-				//PendingSave.Add(entity);
-
 				TypeManager.EnsureExists (entityType);
-
-				//if (saveLinkedEntities)
-				//	Linker.SaveLinkedEntities (entity);
 
 				// Commit links before saving, otherwise it will fail
 				if (commitLinks)
