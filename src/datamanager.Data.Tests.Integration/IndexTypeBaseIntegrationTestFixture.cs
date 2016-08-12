@@ -29,6 +29,13 @@ namespace datamanager.Data.Tests.Integration
 
             Assert.AreEqual (1, foundEntities.Length);
 
+            var foundEntity = data.Get<InheritedEntity> (entity.Id);
+
+            Assert.IsNotNull (foundEntity);
+
+            Assert.AreEqual (entity.Id, foundEntity.Id);
+
+
             // TODO: These asserts might be better off in unit tests rather than an integration test
             Assert.AreEqual (1, derivedEntityIds.Length);
 
