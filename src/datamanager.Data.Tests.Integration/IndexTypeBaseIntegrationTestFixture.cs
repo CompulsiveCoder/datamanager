@@ -4,7 +4,7 @@ using datamanager.Entities;
 
 namespace datamanager.Data.Tests.Integration
 {
-    [TestFixture]
+    [TestFixture(Category="Integration")]
     public class IndexTypeBaseIntegrationTestFixture : BaseDataIntegrationTestFixture
     {
         [Test]

@@ -39,7 +39,6 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataLinkerIntegrationTestFixture.cs" />
-    <Compile Include="EntityTestFixture.cs" />
     <Compile Include="BaseDataIntegrationTestFixture.cs" />
     <Compile Include="DataUpdaterTestFixture.cs" />
     <Compile Include="DataSaverIntegrationTestFixture.cs" />
