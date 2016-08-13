@@ -31,8 +31,6 @@ namespace datamanager.Data
 
 		public DataManagerSettings Settings = new DataManagerSettings();
 
-		public bool IsVerbose = true;
-
 		public DataManager ()
 		{
 			Construct ();
@@ -107,7 +105,7 @@ namespace datamanager.Data
 
 		public void SaveOrUpdate(BaseEntity entity)
 		{
-			if (IsVerbose)
+			if (Settings.IsVerbose)
 				Console.WriteLine ("Save/update");
 			
 			if (Exists (entity))
@@ -185,7 +183,7 @@ namespace datamanager.Data
 
 		public void CommitPending()
 		{
-			if (IsVerbose)
+			if (Settings.IsVerbose)
 				Console.WriteLine ("Committing pending entities");
 			
 			// TODO: Remove if not needed

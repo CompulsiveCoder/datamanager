@@ -57,7 +57,7 @@ namespace datamanager.Data.Tests.Integration
 
 			var data = GetDataManager ();
 
-			data.IsVerbose = true;
+			data.Settings.IsVerbose = true;
 
 			data.Save (article);
 			data.Save (author);
@@ -76,7 +76,7 @@ namespace datamanager.Data.Tests.Integration
 			Assert.IsNull(newArticle.Author, "Linker failed to remove the link.");
 		}
 
-		// TODO: Remove if not needed
+		// TODO: Remove or reimplement
 		//[Test]
 		public void Test_TwoWayReference_RemoveOnDelete()
 		{
@@ -86,7 +86,7 @@ namespace datamanager.Data.Tests.Integration
 			Console.WriteLine ("");
 
 			var data = new DataManager();
-			data.IsVerbose = true;
+			data.Settings.IsVerbose = true;
 
 			data.WriteSummary ();
 
