@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Sider;
 using System.Text;
+using datamanager.Entities;
 
 namespace datamanager.Data
 {
@@ -114,6 +115,8 @@ namespace datamanager.Data
 		public void EnsureExists(Type type)
 		{
 			EnsureExists (type.Name, type.AssemblyQualifiedName);
+
+            EnsureIndexTypesExist (type);
 		}
 
 		public void EnsureExists(string typeName, string typeFullName)
@@ -122,6 +125,17 @@ namespace datamanager.Data
 				Add (typeName, typeFullName);
 			}
 		}
+
+        public void EnsureIndexTypesExist(Type entityType)
+        {
+            foreach (var a in entityType.GetCustomAttributes(true)) {
+                if (a is IndexTypeAttribute) {
+                    var attribute = (IndexTypeAttribute)a;
+
+                    EnsureExists (attribute.IndexType);
+                }
+            }
+        }
 
 		public Type GetType(string typeName)
 		{

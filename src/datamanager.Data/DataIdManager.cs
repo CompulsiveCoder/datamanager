@@ -25,13 +25,31 @@ namespace datamanager.Data
 
 		public void Add(BaseEntity entity)
 		{
-			var ids = new List<string>(GetIds (entity.GetType().Name));
-
-			if (!ids.Contains (entity.Id))
-				ids.Add (entity.Id);
-
-			SetIds (entity.GetType (), ids.ToArray ());
+            Add (entity.GetType(), entity.Id);
 		}
+
+        public void Add(Type entityType, string id)
+        {
+            var ids = new List<string>(GetIds (entityType.Name));
+
+            if (!ids.Contains (id))
+                ids.Add (id);
+
+            SetIds (entityType, ids.ToArray ());
+
+            AddIdForIndexTypes (entityType, id);
+        }
+
+        protected void AddIdForIndexTypes(Type entityType, string id)
+        {
+            foreach (var a in entityType.GetCustomAttributes(true)) {
+                if (a is IndexTypeAttribute) {
+                    var attribute = (IndexTypeAttribute)a;
+
+                    Add (attribute.IndexType, id);
+                }
+            }
+        }
 
 
 		public void Remove(BaseEntity entity)

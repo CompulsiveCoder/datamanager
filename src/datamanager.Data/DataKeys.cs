@@ -14,12 +14,12 @@ namespace datamanager.Data
 
 		public string GetKey(BaseEntity entity)
 		{
-			return GetKey (entity.GetType ().Name, entity.Id);
+			return GetKey (entity.Id);
 		}
 
-		public string GetKey(string entityType, string id)
+		public string GetKey(string id)
 		{
-			return Settings.Prefix + "-" + entityType + "-" + id;
+			return Settings.Prefix + "-" + id;
 		}
 
 		public string GetIdsKey(string entityType)

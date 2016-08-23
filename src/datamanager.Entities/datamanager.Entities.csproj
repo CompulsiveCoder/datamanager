@@ -39,7 +39,6 @@
     <Compile Include="ExampleEntity.cs" />
     <Compile Include="TwoWayAttribute.cs" />
     <Compile Include="OneWayAttribute.cs" />
-    <Compile Include="BaseLinkAttribute.cs" />
     <Compile Include="EntityLinker.cs" />
     <Compile Include="EntityCloner.cs" />
     <Compile Include="Examples\OneWayReference\ExampleReferenceSource.cs" />
@@ -49,11 +48,16 @@
     <Compile Include="Examples\OneToManyReference\ExampleInvoiceItem.cs" />
     <Compile Include="Examples\OneToManyReference\ExampleAuthor.cs" />
     <Compile Include="Examples\OneToManyReference\ExampleArticle.cs" />
+    <Compile Include="BaseLinkAttribute.cs" />
+    <Compile Include="BaseEntityTypeAttribute.cs" />
+    <Compile Include="Examples\IndexedBaseType\InheritedEntity.cs" />
+    <Compile Include="Examples\IndexedBaseType\DerivedEntity.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Examples\" />
     <Folder Include="Examples\OneWayReference\" />
     <Folder Include="Examples\OneToManyReference\" />
+    <Folder Include="Examples\IndexedBaseType\" />
   </ItemGroup>
 </Project>

@@ -19,7 +19,7 @@ namespace datamanager.Data
 
 		public T Read<T>(string entityId)
 		{
-			var json = Client.Get (Keys.GetKey (typeof(T).Name, entityId));
+			var json = Client.Get (Keys.GetKey (entityId));
 
 			if (String.IsNullOrEmpty (json))
 				return default(T);
@@ -43,7 +43,7 @@ namespace datamanager.Data
 			if (entityType == null)
 				throw new ArgumentNullException ("entityType");
 			
-			var key = Keys.GetKey (entityType.Name, entityId);
+			var key = Keys.GetKey (entityId);
 
 			var json = Client.Get (key);
 
