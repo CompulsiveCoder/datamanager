@@ -27,7 +27,7 @@ then
    wget http://nuget.org/nuget.exe
 fi
 
-mozroots --import --sync --machine --url "http://hg.mozilla.org/releases/mozilla-release/raw-file/default/security/nss/lib/ckfw/builtins/certdata.txt"
+cert-sync /etc/ssl/certs/ca-certificates.crt
 
 mono nuget.exe install newtonsoft.json -version 8.0.3
 mono nuget.exe install nunit -version 2.6.4
