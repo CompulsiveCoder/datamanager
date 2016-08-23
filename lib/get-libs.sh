@@ -27,7 +27,7 @@ then
    wget http://nuget.org/nuget.exe
 fi
 
-cert-sync /etc/ssl/certs/ca-certificates.crt
+cert-sync --quiet /etc/ssl/certs/ca-certificates.crt
 
 mono nuget.exe install newtonsoft.json -version 8.0.3
 mono nuget.exe install nunit -version 2.6.4
