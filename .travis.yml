@@ -9,11 +9,5 @@ env:
   - TEST_SUITE=Unit
   - TEST_SUITE=Integration
 
-before_install:
-  - sh prepare.sh
-  - export EnableNuGetPackageRestore=true
-
 script:
-  - sh init.sh
-  - sh build.sh
-  - sh test.sh $TEST_SUITE
+  - sh test-from-github-via-docker.sh
