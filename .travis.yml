@@ -12,6 +12,7 @@ env:
 
 before_install:
   - sh prepare.sh
+  - export EnableNuGetPackageRestore=true
 
 script:
   - sh test.sh $TEST_SUITE
