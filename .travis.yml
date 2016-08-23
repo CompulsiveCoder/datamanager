@@ -4,7 +4,6 @@ language: c#
 
 services:
   - docker
-  - redis
 
 env:
   - TEST_SUITE=Unit
@@ -15,4 +14,6 @@ before_install:
   - export EnableNuGetPackageRestore=true
 
 script:
+  - sh init.sh
+  - sh build.sh
   - sh test.sh $TEST_SUITE
