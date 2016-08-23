@@ -10,4 +10,5 @@ env:
   - TEST_SUITE=Integration
 
 script:
+  - git checkout $TRAVIS_BRANCH
   - sh test-from-github-via-docker.sh
