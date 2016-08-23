@@ -10,5 +10,8 @@ env:
   - TEST_SUITE=Unit
   - TEST_SUITE=Integration
 
+before_install:
+  - sh prepare.sh
+
 script:
-- sh prepare-and-test.sh $TEST_SUITE
+  - sh test.sh $TEST_SUITE
