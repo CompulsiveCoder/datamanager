@@ -3,12 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{ABD79A28-4EDC-4400-9583-4CB96F5E84B9}</ProjectGuid>
+    <ProjectGuid>{DA86D212-92AC-499C-AEF4-25271A993E66}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>datamanager.Data</RootNamespace>
-    <AssemblyName>datamanager.Data</AssemblyName>
-    <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>datamanager.Data.snk</AssemblyOriginatorKeyFile>
+    <RootNamespace>datamanager.Data.Tests.Unit</RootNamespace>
+    <AssemblyName>datamanager.Data.Tests.Unit</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -32,38 +30,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\lib\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\lib\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Parser.cs" />
-    <Compile Include="DataIdManager.cs" />
-    <Compile Include="BaseDataAdapter.cs" />
-    <Compile Include="DataManager.cs" />
-    <Compile Include="DataDeleter.cs" />
-    <Compile Include="DataKeys.cs" />
-    <Compile Include="DataLinker.cs" />
-    <Compile Include="DataLister.cs" />
-    <Compile Include="DataReader.cs" />
-    <Compile Include="DataSaver.cs" />
-    <Compile Include="DataUpdater.cs" />
-    <Compile Include="DataPreparer.cs" />
-    <Compile Include="DataConfig.cs" />
-    <Compile Include="EntityNotFoundException.cs" />
-    <Compile Include="EntityAlreadyExistsException.cs" />
-    <Compile Include="UnsavedLinksException.cs" />
-    <Compile Include="DataTypeManager.cs" />
-    <Compile Include="DataManagerSettings.cs" />
-    <Compile Include="DataChecker.cs" />
-    <Compile Include="DirectoryContext.cs" />
-    <Compile Include="TypeNamesParser.cs" />
-    <Compile Include="Providers\BaseDataProvider.cs" />
+    <Compile Include="DataCheckerUnitTestFixture.cs" />
+    <Compile Include="DataLinkerUnitTestFixture.cs" />
+    <Compile Include="DataSaverUnitTestFixture.cs" />
+    <Compile Include="DataTypeManagerUnitTestFixture.cs" />
+    <Compile Include="DataListerUnitTestFixture.cs" />
+    <Compile Include="BaseDataUnitTestFixture.cs" />
     <Compile Include="DataManagerPrefixBypasser.cs" />
-    <Compile Include="Providers\Memory\MemoryDataProvider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -71,9 +50,13 @@
       <Project>{440222A1-E669-451C-AF43-D6BF7FFAADF0}</Project>
       <Name>datamanager.Entities</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Providers\" />
-    <Folder Include="Providers\Memory\" />
+    <ProjectReference Include="..\datamanager.Data\datamanager.Data.csproj">
+      <Project>{ABD79A28-4EDC-4400-9583-4CB96F5E84B9}</Project>
+      <Name>datamanager.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\datamanager.Data.Tests\datamanager.Data.Tests.csproj">
+      <Project>{C3847E16-2B96-4CEC-8110-11C32CA1D4A1}</Project>
+      <Name>datamanager.Data.Tests</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>
