@@ -24,7 +24,8 @@ namespace datamanager.Entities
 				var newValue = AddEntityToObject (linkedEntity, value, property);
 				property.SetValue (entity, newValue);
 
-				entity.IsPendingLinkCommit = true;
+                // TODO: Remove if not needed
+				//entity.IsPendingLinkCommit = true;
 
 				if (!String.IsNullOrEmpty(otherPropertyName))
 					AddReturnLink (entity, property, linkedEntity, otherPropertyName);
@@ -145,7 +146,8 @@ namespace datamanager.Entities
 				targetEntityProperty.SetValue (targetEntity, newReturnLinksObject);
 			//}
 
-			entity.IsPendingLinkCommit = true;
+            // TODO: Remove if not needed
+			//entity.IsPendingLinkCommit = true;
 		}
 
 		public object AddEntityToObject(BaseEntity entityToAdd, object linksObject, PropertyInfo property)

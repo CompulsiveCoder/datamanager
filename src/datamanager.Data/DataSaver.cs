@@ -1,10 +1,10 @@
 ﻿using System;
-using Sider;
 using System.IO;
 using Newtonsoft.Json;
 using System.Web.Script.Serialization;
 using datamanager.Entities;
 using System.Collections.Generic;
+using datamanager.Data.Providers;
 
 namespace datamanager.Data
 {
@@ -20,7 +20,7 @@ namespace datamanager.Data
 
 		public List<BaseEntity> PendingSave = new List<BaseEntity>();
 
-		public DataSaver (DataManagerSettings settings, DataTypeManager typeManager, DataIdManager idManager, DataKeys keys, DataPreparer preparer, DataLinker linker, DataChecker checker, BaseRedisClientWrapper client) : base (client)
+        public DataSaver (DataManagerSettings settings, DataTypeManager typeManager, DataIdManager idManager, DataKeys keys, DataPreparer preparer, DataLinker linker, DataChecker checker, BaseDataProvider provider) : base (provider)
 		{
 			Settings = settings;
 			IdManager = idManager;
@@ -59,7 +59,7 @@ namespace datamanager.Data
 		{
 			var key = Keys.GetKey (entity);
 			var json = Preparer.PrepareForStorage (entity).ToJson ();
-			Client.Set (key, json);
+			Provider.Set (key, json);
 
 			IdManager.Add (entity);
 		}

@@ -3,20 +3,38 @@
 namespace datamanager.Data
 {
 	public class DataManagerSettings
-	{
-		public string Prefix = "";
+    {
+        public bool IsVerbose = false;
 
-		public bool IsVerbose = false;
+        public DirectoryContext Location;
 
-		public DataManagerSettings (string prefix)
-		{
-			Prefix = prefix;
-		}
+        public string Prefix { get;set; }
 
-		public DataManagerSettings ()
-		{
-			Prefix = Guid.NewGuid ().ToString ();
-		}
-	}
+        public DataManagerSettings (string dataDirectory)
+        {
+            Location = new DirectoryContext (dataDirectory);
+        }
+
+        public DataManagerSettings ()
+        {
+            Location = new DirectoryContext (Environment.CurrentDirectory);
+        }
+
+        static public DataManagerSettings Verbose
+        {
+            get {
+                var settings = new DataManagerSettings ();
+                settings.IsVerbose = true;
+                return settings;
+            }
+        }
+
+        static public DataManagerSettings CreateVerbose(string dataDirectory)
+        {
+            var settings = new DataManagerSettings (dataDirectory);
+            settings.IsVerbose = true;
+            return settings;
+        }
+    }
 }
 

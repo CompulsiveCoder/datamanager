@@ -5,7 +5,7 @@ using datamanager.Entities;
 namespace datamanager.Data.Tests.Unit
 {
 	[TestFixture(Category="Unit")]
-	public class DataLinkerUnitTestFixture : BaseDataTestFixture
+	public class DataLinkerUnitTestFixture : BaseDataUnitTestFixture
 	{
 		/// <summary>
 		/// Ensure that an exception is thrown when a linked entity hasn't been saved yet. This is necessary because the linker cannot synchronise

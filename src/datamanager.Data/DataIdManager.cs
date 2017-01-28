@@ -1,26 +1,32 @@
 ﻿using System;
-using Sider;
 using System.Collections.Generic;
 using datamanager.Entities;
+using datamanager.Data.Providers;
 
 namespace datamanager.Data
 {
 	public class DataIdManager
 	{
+        public DataManagerSettings Settings { get;set; }
 		public DataKeys Keys { get; set; }
 
-		public BaseRedisClientWrapper Client { get; set; }
+        public BaseDataProvider Provider { get; set; }
 
-		public DataIdManager (DataKeys keys, BaseRedisClientWrapper client)
-		{
+        public DataIdManager (DataManagerSettings settings, DataKeys keys, BaseDataProvider provider)
+        {
+            if (settings == null)
+                throw new ArgumentNullException ("settings");
+            
 			if (keys == null)
 				throw new ArgumentNullException ("keys");
 
-			if (client == null)
+			if (provider == null)
 				throw new ArgumentNullException ("client");
 			
+            Settings = settings;
+
 			Keys = keys;
-			Client = client;
+			Provider = provider;
 		}
 
 		public void Add(BaseEntity entity)
@@ -64,15 +70,29 @@ namespace datamanager.Data
 
 		public string[] GetIds(string entityType)
 		{
+            if (Settings.IsVerbose) {
+                Console.WriteLine ("Getting IDs");
+                Console.WriteLine ("  Entity type: " + entityType);
+            }
+
 			var idsKey = Keys.GetIdsKey (entityType);
 
-			var idsString = Client.Get (idsKey);
+            if (Settings.IsVerbose)
+                Console.WriteLine ("  IDs key: " + idsKey);
+
+            var idsString = Provider.Get (idsKey);
+
+            if (Settings.IsVerbose)
+                Console.WriteLine ("  IDs string: " + idsString);
 
 			var ids = new string[] { };
 
 			if (!String.IsNullOrEmpty (idsString))
 				ids = idsString.Split (',');
 
+            if (Settings.IsVerbose)
+                Console.WriteLine ("  IDs total: " + ids.Length);
+            
 			return ids;
 		}
 
@@ -80,7 +100,7 @@ namespace datamanager.Data
 		{
 			var idsKey = Keys.GetIdsKey (entityType.Name);
 			var idsString = String.Join (",", ids);
-			Client.Set(idsKey, idsString);
+			Provider.Set(idsKey, idsString);
 		}
 
 		public string[] ConvertToStringArray(Guid[] ids)

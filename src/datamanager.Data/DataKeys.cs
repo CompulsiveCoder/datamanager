@@ -24,7 +24,7 @@ namespace datamanager.Data
 
 		public string GetIdsKey(string entityType)
 		{
-			return Settings.Prefix + "-" + entityType + "-Ids";
+			return Settings.Prefix + "-" + entityType + ":Ids";
 		}
 
 		public string GetTypesKey()

@@ -8,7 +8,7 @@
     <RootNamespace>datamanager.Data</RootNamespace>
     <AssemblyName>datamanager.Data</AssemblyName>
     <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>tilesim.Data.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>datamanager.Data.snk</AssemblyOriginatorKeyFile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -28,14 +28,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
-    <Reference Include="Sider">
-      <HintPath>..\..\lib\Sider.0.10.0\lib\Sider.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\lib\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -60,9 +58,12 @@
     <Compile Include="UnsavedLinksException.cs" />
     <Compile Include="DataTypeManager.cs" />
     <Compile Include="DataManagerSettings.cs" />
-    <Compile Include="RedisClientWrapper.cs" />
-    <Compile Include="BaseRedisClientWrapper.cs" />
     <Compile Include="DataChecker.cs" />
+    <Compile Include="DirectoryContext.cs" />
+    <Compile Include="TypeNamesParser.cs" />
+    <Compile Include="Providers\BaseDataProvider.cs" />
+    <Compile Include="Providers\MemoryDataProvider.cs" />
+    <Compile Include="DataManagerPrefixBypasser.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -70,5 +71,9 @@
       <Project>{440222A1-E669-451C-AF43-D6BF7FFAADF0}</Project>
       <Name>datamanager.Entities</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Providers\" />
+    <Folder Include="Providers\Memory\" />
   </ItemGroup>
 </Project>

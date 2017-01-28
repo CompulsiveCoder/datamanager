@@ -1,82 +1,68 @@
 ﻿using System;
 using System.Collections.Generic;
-using Sider;
 using System.Text;
-using datamanager.Entities;
+using System.IO;
+using System.Linq;
+using datamanager.Data.Providers;
 
 namespace datamanager.Data
 {
 	public class DataTypeManager
 	{
-		public DataKeys Keys { get;set; }
+        public TypeNamesParser TypeNamesParser = new TypeNamesParser();
 
-		public BaseRedisClientWrapper Client { get;set; }
+        public string TypesKey = "Types";
 
-		public char DefinitionSeparator = '|';
+        public DataManagerSettings Settings { get;set; }
 
-		public char PairSeparator = '-';
+        public BaseDataProvider Provider { get;set; }
 
-		public DataTypeManager (DataKeys keys, BaseRedisClientWrapper client)
-		{
-			if (keys == null)
-				throw new ArgumentNullException ("keys");
-			
-			if (client == null)
-				throw new ArgumentNullException ("client");
-			
-			Keys = keys;
-			Client = client;
+        public DataTypeManager (DataManagerSettings settings, BaseDataProvider provider)
+        {
+            if (settings == null)
+                throw new ArgumentNullException ("settings");
+            
+            if (provider == null)
+                throw new ArgumentNullException ("provider");
+
+            Settings = settings;
+
+            Provider = provider;
 		}
 
 		public string[] GetTypeNames()
 		{
-			var typesKey = Keys.GetTypesKey ();
-
-			var typesString = Client.Get (typesKey);
-
-			var typeNames = new List<string>();
-
-			if (!String.IsNullOrEmpty (typesString)) {
-				var typeDefinitionStrings = typesString.Split (DefinitionSeparator);
-				foreach (var typeDefinitionString in typeDefinitionStrings) {
-					if (!String.IsNullOrEmpty (typeDefinitionString)) {
-						var parts = typeDefinitionString.Split (PairSeparator);
-						var typeName = parts [0];
-						typeNames.Add (typeName);
-					}
-				}
-			}
-
-			return typeNames.ToArray();
+            return (from type in GetTypes ().Keys
+                select type).ToArray();
 		}
 
 		public Dictionary<string, string> GetTypes()
-		{
-			var typesKey = Keys.GetTypesKey ();
+        {
+            if (Settings.IsVerbose) {
+                Console.WriteLine ("Getting types");
+            }
 
-			var typesString = Client.Get (typesKey);
+            var fullTypesKey = Settings.Prefix + "-" + TypesKey;
 
-			var typeDefinitions = new Dictionary<string, string> ();
+            var typesString = Provider.Get (fullTypesKey);
 
-			if (!String.IsNullOrEmpty (typesString)) {
-				var typeDefinitionStrings = typesString.Split (DefinitionSeparator);
-				foreach (var typeDefinitionString in typeDefinitionStrings) {
-					if (!String.IsNullOrEmpty (typeDefinitionString)
-						&& typeDefinitionString.Contains(PairSeparator.ToString())) {
-						var parts = typeDefinitionString.Split (PairSeparator);
-						var typeName = parts [0];
-						var typeFullName = parts [1];
-						typeDefinitions.Add (typeName, typeFullName);
-					}
-				}
-			}
+            if (Settings.IsVerbose) {
+                Console.WriteLine ("  Types key: " + fullTypesKey);
+                Console.WriteLine ("  Types string: " + typesString);
+            }
 
-			return typeDefinitions;
+            var typeDefinitions = TypeNamesParser.ParseTypeDefinitions (typesString);
+
+            if (Settings.IsVerbose) {
+                Console.WriteLine ("  Definitions found: " + typeDefinitions.Count);
+            }
+
+            return typeDefinitions;
 		}
 
 		public void Add(Type type)
 		{
-			Add (type.Name, type.AssemblyQualifiedName);
+            Add (type.Name, type.AssemblyQualifiedName);
 		}
 
 		public void Add(string typeName, string typeFullName)
@@ -90,19 +76,10 @@ namespace datamanager.Data
 		}
 
 		public void SetTypes(Dictionary<string, string> typeDefinitions)
-		{
-			var typesKey = Keys.GetTypesKey ();
+        {
+            var typesString = TypeNamesParser.CompileTypeDefinitions (typeDefinitions);
 
-			var builder = new StringBuilder ();
-
-			foreach (var typeName in typeDefinitions.Keys)
-			{
-				builder.Append (typeName + PairSeparator + typeDefinitions [typeName] + DefinitionSeparator);
-			}
-
-			var typesString = builder.ToString ().TrimEnd (DefinitionSeparator);
-
-			Client.Set(typesKey, typesString);
+            Provider.Set(Settings.Prefix + "-" + TypesKey, typesString);
 		}
 
 		public bool Exists(string typeName)
@@ -114,9 +91,7 @@ namespace datamanager.Data
 
 		public void EnsureExists(Type type)
 		{
-			EnsureExists (type.Name, type.AssemblyQualifiedName);
-
-            EnsureIndexTypesExist (type);
+            EnsureExists (type.Name, type.AssemblyQualifiedName);
 		}
 
 		public void EnsureExists(string typeName, string typeFullName)
@@ -126,25 +101,28 @@ namespace datamanager.Data
 			}
 		}
 
-        public void EnsureIndexTypesExist(Type entityType)
-        {
-            foreach (var a in entityType.GetCustomAttributes(true)) {
-                if (a is IndexTypeAttribute) {
-                    var attribute = (IndexTypeAttribute)a;
-
-                    EnsureExists (attribute.IndexType);
-                }
-            }
-        }
-
 		public Type GetType(string typeName)
 		{
+            if (Settings.IsVerbose) {
+                Console.WriteLine ("Getting type '" + typeName + "'.");
+            }
+
+            Type type = null;
+            
 			var types = GetTypes ();
 			if (types.ContainsKey (typeName)) {
-				var typeFullName = types [typeName];			
-				return Type.GetType (typeFullName);
+                var typeFullName = types [typeName];	
+                if (Settings.IsVerbose) {
+                    Console.WriteLine ("Full name: " + typeFullName);
+                }		
+                type = Type.GetType (typeFullName);
 			} else
 				throw new InvalidOperationException ("The type '" + typeName + "' was not found.");
+
+            if (Settings.IsVerbose) {
+                Console.WriteLine ("Matched: " + type.AssemblyQualifiedName);
+            }
+            return type;
 		}
 
 	}

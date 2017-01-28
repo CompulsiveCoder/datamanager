@@ -1,14 +1,15 @@
 ﻿using System;
 using datamanager.Data;
 using datamanager.Entities;
-using Sider;
 using System.Collections.Generic;
+using datamanager.Data.Providers;
+using datamanager.Data.Providers.Memory;
 
 namespace datamanager.Data
 {
 	public class DataManager : IDisposable
 	{
-		public DataTypeManager TypeManager;
+        public DataTypeManager TypeManager;
 		public DataIdManager IdManager;
 
 		public DataKeys Keys;
@@ -25,78 +26,67 @@ namespace datamanager.Data
 
 		public EntityLinker EntityLinker;
 
-		public BaseRedisClientWrapper Client;
+        public BaseDataProvider Provider;
 
-		public List<BaseEntity> PendingDelete = new List<BaseEntity>();
+        // TODO: Is this needed? Remove if osolete
+		//public List<BaseEntity> PendingDelete = new List<BaseEntity>();
 
 		public DataManagerSettings Settings = new DataManagerSettings();
 
-		public DataManager ()
+        public DataManager()
+        {
+            Construct (new MemoryDataProvider ());
+        }
+
+		public DataManager(BaseDataProvider provider)
 		{
-			Construct ();
+			Construct (provider);
 		}
 
-		public DataManager(BaseRedisClientWrapper client)
+		public void Construct(BaseDataProvider provider)
 		{
-			Construct (client);
-		}
+            if (Settings.IsVerbose) {
+                Console.WriteLine ("Constructing DataManager");
+                Console.WriteLine ("  Provider: " + provider.GetType().FullName);
+            }
 
-		public void Construct()
-		{
-			Construct (new RedisClientWrapper ());
-		}
-
-		public void Construct(BaseRedisClientWrapper client)
-		{
-			Client = client;
+			Provider = provider;
 
 			Keys = new DataKeys (Settings);
 
-			TypeManager = new DataTypeManager (Keys, Client);
-			IdManager = new DataIdManager (Keys, Client);
+			TypeManager = new DataTypeManager (Settings, Provider);
+            IdManager = new DataIdManager (Settings, Keys, Provider);
 
 			EntityLinker = new EntityLinker ();
 
-
-			var preparer = new DataPreparer (Client);
+			var preparer = new DataPreparer (Provider);
 			Preparer = preparer;
 
-			var reader = new DataReader (TypeManager, IdManager, Keys, client);
+			var reader = new DataReader (TypeManager, IdManager, Keys, provider);
 			Reader = reader;
 
-			var lister = new DataLister (TypeManager, IdManager, reader, client);
+			var lister = new DataLister (Settings, TypeManager, IdManager, reader, provider);
 			Lister = lister;
 
 			var checker = new DataChecker (reader, Settings);
 			Checker = checker;
 
-			var saver = new DataSaver (Settings, TypeManager, IdManager, Keys, preparer, null, checker, client); // The linker argument is null because it needs to be set after it's created below
+			var saver = new DataSaver (Settings, TypeManager, IdManager, Keys, preparer, null, checker, provider); // The linker argument is null because it needs to be set after it's created below
 			Saver = saver;
 
-			var updater = new DataUpdater (Settings, Keys, null, preparer, checker, client); // The linker argument is null because it needs to be set after it's created below
+			var updater = new DataUpdater (Settings, Keys, null, preparer, checker, provider); // The linker argument is null because it needs to be set after it's created below
 			Updater = updater;
 
 			var linker = new DataLinker (Settings, reader, saver, updater, checker, EntityLinker);
 			Linker = linker;
 
-			var deleter = new DataDeleter (IdManager, Keys, linker, client);
+			var deleter = new DataDeleter (IdManager, Keys, linker, provider);
 			Deleter = deleter;
 
 			// TODO: Is there a way to avoid this messy hack?
 			// Make sure the linker is set to the saver and updater
 			saver.Linker = linker;
 			updater.Linker = linker;
-
-			// TODO: Remove if not needed
-			/*Preparer = new DataPreparer (Client);
-			Reader = new DataReader (TypeManager, IdManager, Keys, Client);
-			Checker = new DataChecker (Reader, Settings);
-			Linker = new DataLinker (Settings, Reader, Saver, Updater, Checker, EntityLinker);
-			Saver = new DataSaver (Settings, TypeManager, IdManager, Keys, Preparer, Linker, Checker, Client);
-		
-			Deleter = new DataDeleter (IdManager, Keys, Linker, Client);
-			Updater = new DataUpdater (Settings, Keys, Linker, Preparer, Checker, Client);
-			Lister = new DataLister (TypeManager, IdManager, Reader, Client);*/
 		}
 
 		public void Open()
@@ -131,7 +121,7 @@ namespace datamanager.Data
 			Saver.Save (entity, saveLinkedEntities);
 
 			// TODO: Remove if not needed
-			CommitPending ();
+			//CommitPending ();
 		}
 
 		// TODO: Remove if not needed
@@ -175,11 +165,12 @@ namespace datamanager.Data
 			CommitPending ();
 		}
 
-		public void DelayDelete(BaseEntity entity)
+        // TODO: Remove if not needed
+		/*public void DelayDelete(BaseEntity entity)
 		{
 			if (!PendingDelete.Contains(entity))
 				PendingDelete.Add (entity);
-		}
+		}*/
 
 		public void CommitPending()
 		{
@@ -191,20 +182,20 @@ namespace datamanager.Data
 
 			Updater.CommitPendingUpdates ();
 
-			// TODO: Move to deleter object
-			CommitPendingDeletes ();
+			// TODO: Remove if not needed
+			//CommitPendingDeletes ();
 		}
 
 
 		// TODO: Should delayed deletion be removed? It's not currently being used by the data linker.
-		public void CommitPendingDeletes()
+		/*public void CommitPendingDeletes()
 		{
 			while (PendingDelete.Count > 0)
 			{
 				Deleter.Delete (PendingDelete[0]);
 				PendingDelete.RemoveAt (0);
 			}
-		}
+		}*/
 
 		public T Get<T>(string id)
 		{
@@ -281,7 +272,7 @@ namespace datamanager.Data
 
 		public void Dispose ()
 		{
-			Client.Quit ();
+			Provider.Quit ();
 		}
 
 		#endregion

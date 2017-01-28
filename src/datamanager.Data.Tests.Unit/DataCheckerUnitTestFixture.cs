@@ -2,21 +2,21 @@
 using NUnit.Framework;
 using datamanager.Entities;
 
-namespace datamanager.Data.Tests
+namespace datamanager.Data.Tests.Unit
 {
     [TestFixture(Category="Unit")]
-	public class DataCheckerUnitTestFixture : BaseDataTestFixture
+    public class DataCheckerUnitTestFixture : BaseDataUnitTestFixture
 	{
 		[Test]
 		public void Test_Check()
 		{
-			var context = GetTestContext ();
+            var data = GetDataManager ();
 
-			var checker = new DataChecker (context.Reader, context.Settings);
+			var checker = new DataChecker (data.Reader, data.Settings);
 
 			var exampleArticle = new ExampleArticle ();
 
-			context.Saver.Save (exampleArticle);
+			data.Saver.Save (exampleArticle);
 
 			// TODO: Make this test fully isolated instead of using the Save function above
 

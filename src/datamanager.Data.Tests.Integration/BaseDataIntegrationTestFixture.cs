@@ -1,5 +1,6 @@
 ﻿using System;
 using NUnit.Framework;
+using datamanager.Data.Providers.Memory;
 
 namespace datamanager.Data.Tests
 {
@@ -24,12 +25,12 @@ namespace datamanager.Data.Tests
 		public void Dispose()
 		{
 			if (data != null && ResetDataOnTearDown)
-				data.Client.FlushAll ();
+				data.Provider.DeleteAll ();
 		}
 
 		public DataManager GetDataManager()
 		{
-			data = new DataManager (new MockRedisClientWrapper ());
+            data = new DataManager (new MemoryDataProvider());
 
 			data.Settings.Prefix = "Test-" + Guid.NewGuid ().ToString ().Substring (0, 8);
 			data.Settings.IsVerbose = true;

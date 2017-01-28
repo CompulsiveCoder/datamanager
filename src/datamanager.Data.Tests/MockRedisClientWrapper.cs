@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using datamanager.Data.Providers;
 
 namespace datamanager.Data.Tests
 {
-	public class MockRedisClientWrapper : BaseRedisClientWrapper
+    public class MockRedisClientWrapper : BaseDataProvider
 	{
 		public Dictionary<string, string> Data = new Dictionary<string, string>();
 
@@ -24,12 +25,12 @@ namespace datamanager.Data.Tests
 			Data[key] = value;
 		}
 
-		public override void Del (string key)
+		public override void Delete (string key)
 		{
 			Data.Remove (key);
 		}
 
-		public override void FlushAll ()
+		public override void DeleteAll ()
 		{
 			Data = new Dictionary<string, string> ();
 		}

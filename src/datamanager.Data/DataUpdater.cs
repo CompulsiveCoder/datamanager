@@ -1,7 +1,7 @@
 ﻿using System;
-using Sider;
 using datamanager.Entities;
 using System.Collections.Generic;
+using datamanager.Data.Providers;
 
 namespace datamanager.Data
 {
@@ -17,7 +17,7 @@ namespace datamanager.Data
 
 		public List<BaseEntity> PendingUpdate = new List<BaseEntity>();
 
-		public DataUpdater (DataManagerSettings settings, DataKeys keys, DataLinker linker, DataPreparer preparer, DataChecker checker, BaseRedisClientWrapper client) : base(client)
+        public DataUpdater (DataManagerSettings settings, DataKeys keys, DataLinker linker, DataPreparer preparer, DataChecker checker, BaseDataProvider provider) : base(provider)
 		{
 			Settings = settings;
 			Keys = keys;
@@ -42,7 +42,7 @@ namespace datamanager.Data
 		public void InternalUpdate(BaseEntity entity)
 		{
 			var key = Keys.GetKey (entity);
-			Client.Set (key, Preparer.PrepareForStorage (entity).ToJson ());
+			Provider.Set (key, Preparer.PrepareForStorage (entity).ToJson ());
 		}
 
 		public void DelayUpdate(BaseEntity entity)

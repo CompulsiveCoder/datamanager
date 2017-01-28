@@ -1,6 +1,6 @@
 ﻿using System;
-using Sider;
 using datamanager.Entities;
+using datamanager.Data.Providers;
 
 namespace datamanager.Data
 {
@@ -10,7 +10,7 @@ namespace datamanager.Data
 		public DataIdManager IdManager;
 		public DataKeys Keys;
 
-		public DataReader (DataTypeManager typeManager, DataIdManager idManager, DataKeys keys, BaseRedisClientWrapper client) : base (client)
+        public DataReader (DataTypeManager typeManager, DataIdManager idManager, DataKeys keys, BaseDataProvider provider) : base (provider)
 		{
 			TypeManager = typeManager;
 			IdManager = idManager;
@@ -19,7 +19,7 @@ namespace datamanager.Data
 
 		public T Read<T>(string entityId)
 		{
-            var json = Client.Get (Keys.GetKey (typeof(T).Name, entityId));
+            var json = Provider.Get (Keys.GetKey (typeof(T).Name, entityId));
 
 			if (String.IsNullOrEmpty (json))
 				return default(T);
@@ -45,7 +45,7 @@ namespace datamanager.Data
 			
             var key = Keys.GetKey (entityType.Name, entityId);
 
-			var json = Client.Get (key);
+			var json = Provider.Get (key);
 
 			if (String.IsNullOrEmpty (json))
 				return null;

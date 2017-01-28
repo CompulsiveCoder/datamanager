@@ -1,11 +1,12 @@
 ﻿using System;
 using datamanager.Entities;
+using datamanager.Data.Providers;
 
 namespace datamanager.Data
 {
 	public class DataPreparer : BaseDataAdapter
 	{
-		public DataPreparer (BaseRedisClientWrapper client) : base(client)
+        public DataPreparer (BaseDataProvider provider) : base(provider)
 		{
 		}
 

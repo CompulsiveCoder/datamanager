@@ -85,7 +85,7 @@ namespace datamanager.Data.Tests.Integration
 			Console.WriteLine ("Preparing test...");
 			Console.WriteLine ("");
 
-			var data = new DataManager();
+            var data = GetDataManager();
 			data.Settings.IsVerbose = true;
 
 			data.WriteSummary ();

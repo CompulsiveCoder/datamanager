@@ -16,6 +16,7 @@ namespace datamanager.Entities.Tests
 
 			adder.AddLink (source, "Target", target);
 
+            // TODO: Remove or reimplement
 			//Assert.IsNotNull (source.Target, "Link failed.");
 			//Assert.IsNotNull (target.Left, "Reverse link failed.");
 		}

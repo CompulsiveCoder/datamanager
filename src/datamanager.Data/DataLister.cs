@@ -1,18 +1,20 @@
 ﻿using System;
-using Sider;
 using System.Collections.Generic;
 using datamanager.Entities;
+using datamanager.Data.Providers;
 
 namespace datamanager.Data
 {
 	public class DataLister : BaseDataAdapter
 	{
-		public DataTypeManager TypeManager;
+        public DataManagerSettings Settings;
+        public DataTypeManager TypeManager;
 		public DataIdManager IdManager;
 		public DataReader Reader;
 
-		public DataLister (DataTypeManager typeManager, DataIdManager idManager, DataReader reader, BaseRedisClientWrapper client) : base (client)
+        public DataLister (DataManagerSettings settings, DataTypeManager typeManager, DataIdManager idManager, DataReader reader, BaseDataProvider provider) : base (provider)
 		{
+            Settings = settings;
 			TypeManager = typeManager;
 			IdManager = idManager;
 			Reader = reader;
@@ -21,6 +23,11 @@ namespace datamanager.Data
 
 		public T[] Get<T>()
 		{
+            if (Settings.IsVerbose) {
+                Console.WriteLine ("Getting entities");
+                Console.WriteLine ("Type: " + typeof(T).AssemblyQualifiedName);
+            }
+
 			var ids = IdManager.GetIds(typeof(T).Name);
 
 			var entities = new List<T> ();

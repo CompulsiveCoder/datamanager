@@ -9,7 +9,13 @@ namespace datamanager.Entities
 	{
 		public string Id;
 
-		public bool IsPendingLinkCommit = false;
+        // TODO: Remove if not needed
+		//public bool IsPendingLinkCommit = false;
+
+        public string TypeName
+        {
+            get { return GetType ().Name; }
+        }
 
 		public BaseEntity ()
 		{

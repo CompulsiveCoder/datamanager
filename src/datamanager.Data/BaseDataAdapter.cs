@@ -1,35 +1,17 @@
 ﻿using System;
 using Newtonsoft.Json;
 using datamanager.Entities;
+using datamanager.Data.Providers;
 
 namespace datamanager.Data
 {
 	public class BaseDataAdapter
 	{
-		public bool TestMode = false;
+        public BaseDataProvider Provider;
 
-		// TODO: Remove if not needed
-		//public DataManager Data;
-
-		public BaseRedisClientWrapper Client;
-
-		//public DataKeys Keys;
-
-		/*public BaseDataAdapter ()
+		public BaseDataAdapter(BaseDataProvider provider)
 		{
-			Data = new DataManager ();
-			Keys = new DataKeys (Data.Settings);
-		}
-
-		public BaseDataAdapter(DataManager data)
-		{
-			Data = data;
-			Keys = new DataKeys (Data.Settings);
-		}*/
-
-		public BaseDataAdapter(BaseRedisClientWrapper client)
-		{
-			Client = client;
+			Provider = provider;
 		}
 
 		public string EntityToJson(BaseEntity entity)

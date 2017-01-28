@@ -1,6 +1,6 @@
 ﻿using System;
-using Sider;
 using datamanager.Entities;
+using datamanager.Data.Providers;
 
 namespace datamanager.Data
 {
@@ -10,7 +10,7 @@ namespace datamanager.Data
 		public DataLinker Linker;
 		public DataKeys Keys;
 
-		public DataDeleter (DataIdManager idManager, DataKeys keys, DataLinker linker, BaseRedisClientWrapper client) : base (client)
+        public DataDeleter (DataIdManager idManager, DataKeys keys, DataLinker linker, BaseDataProvider provider) : base (provider)
 		{
 			IdManager = idManager;
 			Keys = keys;
@@ -26,7 +26,7 @@ namespace datamanager.Data
 
 			Linker.RemoveLinks (entity);
 
-			Client.Del(Keys.GetKey(entity));
+			Provider.Delete(Keys.GetKey(entity));
 
 			IdManager.Remove (entity);
 		}
