@@ -4,7 +4,7 @@ namespace datamanager.Data
 {
 	public class DataConfig
 	{
-		static public string Prefix = "TownSim";
+		static public string Prefix = "tilesim";
 	}
 }
 
