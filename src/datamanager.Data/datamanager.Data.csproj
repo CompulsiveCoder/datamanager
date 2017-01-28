@@ -8,7 +8,7 @@
     <RootNamespace>datamanager.Data</RootNamespace>
     <AssemblyName>datamanager.Data</AssemblyName>
     <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>townsim.Data.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>tilesim.Data.snk</AssemblyOriginatorKeyFile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
