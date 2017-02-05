@@ -8,7 +8,7 @@ namespace datamanager.Data
 
         public DirectoryContext Location;
 
-        public string Prefix { get;set; }
+        public string Prefix = "";
 
         public DataManagerSettings (string dataDirectory)
         {

@@ -71,19 +71,19 @@ namespace datamanager.Data
 		public string[] GetIds(string entityType)
 		{
             if (Settings.IsVerbose) {
-                Console.WriteLine ("Getting IDs");
-                Console.WriteLine ("  Entity type: " + entityType);
+                Console.WriteLine ("    Getting IDs");
+                Console.WriteLine ("      Entity type: " + entityType);
             }
 
 			var idsKey = Keys.GetIdsKey (entityType);
 
             if (Settings.IsVerbose)
-                Console.WriteLine ("  IDs key: " + idsKey);
+                Console.WriteLine ("      IDs key: " + idsKey);
 
             var idsString = Provider.Get (idsKey);
 
             if (Settings.IsVerbose)
-                Console.WriteLine ("  IDs string: " + idsString);
+                Console.WriteLine ("      IDs string: " + idsString);
 
 			var ids = new string[] { };
 
@@ -91,7 +91,7 @@ namespace datamanager.Data
 				ids = idsString.Split (',');
 
             if (Settings.IsVerbose)
-                Console.WriteLine ("  IDs total: " + ids.Length);
+                Console.WriteLine ("      IDs total: " + ids.Length);
             
 			return ids;
 		}

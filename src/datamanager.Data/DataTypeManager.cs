@@ -39,7 +39,7 @@ namespace datamanager.Data
 		public Dictionary<string, string> GetTypes()
         {
             if (Settings.IsVerbose) {
-                Console.WriteLine ("Getting types");
+                Console.WriteLine ("    Getting types");
             }
 
             var fullTypesKey = Settings.Prefix + "-" + TypesKey;
@@ -47,14 +47,14 @@ namespace datamanager.Data
             var typesString = Provider.Get (fullTypesKey);
 
             if (Settings.IsVerbose) {
-                Console.WriteLine ("  Types key: " + fullTypesKey);
-                Console.WriteLine ("  Types string: " + typesString);
+                Console.WriteLine ("      Types key: " + fullTypesKey);
+                Console.WriteLine ("      Types string: " + typesString);
             }
 
             var typeDefinitions = TypeNamesParser.ParseTypeDefinitions (typesString);
 
             if (Settings.IsVerbose) {
-                Console.WriteLine ("  Definitions found: " + typeDefinitions.Count);
+                Console.WriteLine ("      Definitions found: " + typeDefinitions.Count);
             }
 
             return typeDefinitions;
@@ -104,7 +104,7 @@ namespace datamanager.Data
 		public Type GetType(string typeName)
 		{
             if (Settings.IsVerbose) {
-                Console.WriteLine ("Getting type '" + typeName + "'.");
+                Console.WriteLine ("    Getting type '" + typeName + "'.");
             }
 
             Type type = null;
@@ -113,14 +113,14 @@ namespace datamanager.Data
 			if (types.ContainsKey (typeName)) {
                 var typeFullName = types [typeName];	
                 if (Settings.IsVerbose) {
-                    Console.WriteLine ("Full name: " + typeFullName);
+                    Console.WriteLine ("      Full name: " + typeFullName);
                 }		
                 type = Type.GetType (typeFullName);
 			} else
 				throw new InvalidOperationException ("The type '" + typeName + "' was not found.");
 
             if (Settings.IsVerbose) {
-                Console.WriteLine ("Matched: " + type.AssemblyQualifiedName);
+                Console.WriteLine ("      Matched: " + type.AssemblyQualifiedName);
             }
             return type;
 		}

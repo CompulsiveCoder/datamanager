@@ -24,8 +24,8 @@ namespace datamanager.Data
 		public T[] Get<T>()
 		{
             if (Settings.IsVerbose) {
-                Console.WriteLine ("Getting entities");
-                Console.WriteLine ("Type: " + typeof(T).AssemblyQualifiedName);
+                Console.WriteLine ("  Getting entities");
+                Console.WriteLine ("    Type: " + typeof(T).AssemblyQualifiedName);
             }
 
 			var ids = IdManager.GetIds(typeof(T).Name);

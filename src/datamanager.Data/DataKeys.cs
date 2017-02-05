@@ -19,18 +19,43 @@ namespace datamanager.Data
 
 		public string GetKey(string entityTypeName, string id)
 		{
-            return Settings.Prefix + "-" + entityTypeName + "-" + id;
+            var key = entityTypeName + "-" + id;
+
+            key = AddPrefix (key);
+
+            return key;
 		}
 
-		public string GetIdsKey(string entityType)
-		{
-			return Settings.Prefix + "-" + entityType + ":Ids";
+        public string GetIdsKey(Type entityType)
+        {
+            return GetIdsKey (entityType.Name);
+        }
+
+		public string GetIdsKey(string entityTypeName)
+        {
+            var key = entityTypeName + ":Ids";
+
+            key = AddPrefix (key);
+            
+            return key;
 		}
 
 		public string GetTypesKey()
 		{
-			return Settings.Prefix + "-Types";
+            var key = "Types";
+
+            key = AddPrefix (key);
+
+            return key;
 		}
+
+        public string AddPrefix(string key)
+        {
+            if (!String.IsNullOrEmpty (Settings.Prefix))
+                key = Settings.Prefix + "-" + key;
+
+            return key;
+        }
 	}
 }
 

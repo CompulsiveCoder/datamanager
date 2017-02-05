@@ -7,7 +7,7 @@ namespace datamanager.Entities
 	[Serializable]
 	public class BaseEntity
 	{
-		public string Id;
+        public virtual string Id { get;set; }
 
         // TODO: Remove if not needed
 		//public bool IsPendingLinkCommit = false;
